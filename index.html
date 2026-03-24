@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Adventure Quest!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #e0f7fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 { color: #ff6f00; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.1); }
+        p.subtitle { font-size: 1.2em; color: #00695c; margin-bottom: 30px; }
+
+        .quest-board {
+            background-color: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border: 4px dashed #ffca28;
+        }
+
+        .quest-btn {
+            background-color: #29b6f6; color: white; border: none;
+            padding: 15px 30px; margin: 10px; border-radius: 50px;
+            font-size: 1.2em; font-weight: bold; cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .quest-btn:hover { transform: scale(1.05); background-color: #0288d1; }
+        .quest-btn.action { background-color: #66bb6a; }
+        .quest-btn.action:hover { background-color: #43a047; }
+
+        .flashcard-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .card { background-color: transparent; width: 200px; height: 150px; perspective: 1000px; }
+        .card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer; }
+        .card:hover .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); font-size: 1.5em; font-weight: bold; }
+        .card-front { background-color: #ff7043; color: white; }
+        .card-back { background-color: #66bb6a; color: white; transform: rotateY(180deg); flex-direction: column; font-size: 1.2em; }
+        .card-back span { font-size: 0.8em; font-weight: normal; margin-top: 10px; }
+
+        /* --- CSS BARU UNTUK POP-UP MODAL --- */
+        .modal {
+            display: none; /* Sembunyikan modal secara default */
+            position: fixed; z-index: 10; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5); /* Latar belakang transparan gelap */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto; padding: 30px;
+            border: 4px dashed #ffca28; border-radius: 20px;
+            width: 80%; max-width: 400px;
+            text-align: center; position: relative;
+            animation: popIn 0.3s ease-out;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-btn {
+            color: #aaa; position: absolute; top: 10px; right: 20px;
+            font-size: 28px; font-weight: bold; cursor: pointer;
+        }
+        .close-btn:hover { color: #ff6f00; }
+    </style>
+</head>
+<body>
+
+    <h1>🚀 CPC English Adventure!</h1>
+    <p class="subtitle">Welcome Explorer! Are you ready to learn?</p>
+
+    <div class="quest-board">
+        <h2>🗺️ Today's Quests</h2>
+        <button class="quest-btn" onclick="openStoryModal()">Mission 1: The Missing Words</button>
+        <button class="quest-btn action" onclick="openGrammarGame()">Mission 2: Grammar Rescue (Game)</button>
+    </div>
+
+    <div id="storyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>🕵️ The Secret Artifact</h2>
+            <p>Agent, we need your help! Read the secret passage carefully to find the hidden clues. Are you ready?</p>
+            <button class="quest-btn" onclick="startReadingQuest()">Let's Go!</button>
+        </div>
+    </div>
+
+    <h2>✨ Magic Vocabulary Cards</h2>
+    <p>Hover to reveal the secret meaning!</p>
+
+    <div class="flashcard-container">
+        <div class="card"><div class="card-inner"><div class="card-front">Enormous</div><div class="card-back">Sangat Besar<span>Example: Enormous elephant.</span></div></div></div>
+        <div class="card"><div class="card-inner"><div class="card-front">Fascinating</div><div class="card-back">Sangat Menarik<span>Example: Fascinating book.</span></div></div></div>
+        <div class="card"><div class="card-inner"><div class="card-front">Courageous</div><div class="card-back">Pemberani<span>Example: Courageous hero.</span></div></div></div>
+    </div>
+
+    <script>
+        const modal = document.getElementById("storyModal");
+
+        // Fungsi untuk membuka Pop-up Cerita
+        function openStoryModal() {
+            modal.style.display = "block";
+        }
+
+        // Fungsi untuk menutup Pop-up
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Fungsi saat tombol "Let's Go" di dalam Pop-up diklik
+        function startReadingQuest() {
+            alert("Keren! Nanti tombol ini bisa kamu arahkan ke halaman PDF atau teks bacaan CPC kamu.");
+            closeModal();
+            // Nanti kamu bisa ganti alert di atas dengan: window.open("LINK_BACAAN_KAMU", "_blank");
+        }
+
+        // Fungsi untuk membuka link eksternal (Wordwall/Quizizz)
+        function openGrammarGame() {
+            // Ganti link di bawah dengan link game buatanmu
+            window.open("https://wordwall.net/", "_blank");
+        }
+
+        // Menutup pop-up jika murid mengklik area di luar kotak putih
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+</body>
+</html>
