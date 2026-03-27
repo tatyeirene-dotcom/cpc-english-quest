@@ -3,270 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPC Secret Agent Dashboard</title>
+    <title>Cambridge Quest with Neko</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f3e5f5; /* Ungu pastel */
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
+        body { font-family: 'Nunito', sans-serif; background-color: #e8f5e9; color: #333; margin: 0; padding: 20px; text-align: center; }
+        h1 { color: #2e7d32; font-size: 2.2em; margin-bottom: 5px; }
+        
+        /* --- LOGIN SCREEN --- */
+        #loginScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #a5d6a7; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 5px dashed #4caf50; }
+        .login-box input { font-size: 1.2em; padding: 10px; border-radius: 10px; border: 2px solid #81c784; text-align: center; margin: 15px 0; font-family: 'Nunito'; }
+        
+        /* --- HEADER & PROGRESS --- */
+        .user-panel { background: #fff; padding: 15px 25px; border-radius: 20px; margin: 0 auto 20px auto; max-width: 700px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 3px solid #81c784; }
+        .user-info { text-align: left; }
+        .user-name { font-size: 1.3em; font-weight: 900; color: #2e7d32; }
+        .progress-container { width: 200px; background-color: #e0e0e0; border-radius: 15px; overflow: hidden; height: 20px; margin-top: 5px; }
+        .progress-bar { height: 100%; background-color: #ffb300; width: 0%; transition: width 0.5s ease-in-out; }
+        .points-text { font-weight: bold; color: #f57f17; }
 
-        h1 { color: #8e24aa; font-size: 2.5em; margin-bottom: 5px; }
-        p.subtitle { font-size: 1.2em; color: #4a148c; margin-bottom: 30px; font-weight: bold; }
+        /* --- CHARACTER INTERACTIVE --- */
+        .character-container { margin: 10px auto; height: 120px; }
+        .character { font-size: 5em; display: inline-block; transition: transform 0.3s; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        .char-bounce { animation: bounce 0.5s ease; }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
 
-        /* Grid Menu Utama */
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        /* --- DASHBOARD --- */
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; max-width: 700px; margin: 0 auto; }
+        .menu-card { background-color: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 15px rgba(0,0,0,0.1); border: 4px solid #81c784; cursor: pointer; transition: transform 0.2s; }
+        .menu-card:hover { transform: translateY(-5px); border-color: #4caf50; }
+        .menu-icon { font-size: 2.5em; margin-bottom: 5px; }
+        .menu-title { font-size: 1.2em; font-weight: 900; color: #2e7d32; }
 
-        .menu-card {
-            background-color: #fff;
-            border-radius: 20px;
-            padding: 30px 20px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-            border: 4px solid #ce93d8;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .menu-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 20px rgba(0,0,0,0.2);
-            border-color: #ab47bc;
-        }
-
-        .menu-icon { font-size: 3em; margin-bottom: 10px; }
-        .menu-title { font-size: 1.4em; font-weight: 900; color: #6a1b9a; }
-
-        /* Modal / Pop-up Styling */
-        .modal {
-            display: none; position: fixed; z-index: 100; left: 0; top: 0;
-            width: 100%; height: 100%; background-color: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background-color: #fff; margin: 5% auto; padding: 30px;
-            border-radius: 20px; width: 90%; max-width: 600px;
-            text-align: center; position: relative;
-            animation: slideDown 0.4s ease-out;
-            max-height: 80vh; overflow-y: auto;
-        }
-
-        @keyframes slideDown {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .close-btn {
-            position: absolute; top: 15px; right: 25px;
-            font-size: 30px; font-weight: bold; color: #aaa; cursor: pointer;
-        }
+        /* --- MODAL GENERAL --- */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); overflow-y: auto;}
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; text-align: center; position: relative; border: 5px dashed #ffb300; margin-bottom: 50px;}
+        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; color: #aaa; cursor: pointer; }
         .close-btn:hover { color: #f44336; }
 
-        /* Tombol Umum */
-        .btn {
-            background-color: #42a5f5; color: white; border: none;
-            padding: 12px 25px; border-radius: 50px; font-size: 1.1em;
-            font-weight: bold; cursor: pointer; margin-top: 15px;
-            transition: background 0.2s;
-        }
-        .btn:hover { background-color: #1e88e5; }
+        .btn { background-color: #ffb300; color: #fff; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn:hover { background-color: #ff8f00; }
+        .btn-reward { background-color: #4caf50; display: none; width: 100%; margin-top: 10px; animation: pulse 1s infinite; font-size: 1.2em; padding: 15px;}
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        
+        .feedback-text { font-weight: bold; margin-top: 15px; min-height: 25px; font-size: 1.1em; }
+        .wrong-shake { animation: shake 0.4s; background-color: #ffcdd2 !important; border-color: #e53935 !important; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
 
-        /* Memory Game Styling */
-        .memory-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px;
-        }
-        .memory-card {
-            background-color: #ffb74d; color: transparent; height: 80px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2em; font-weight: bold; border-radius: 10px;
-            cursor: pointer; transition: 0.3s; border: 2px solid #f57c00;
-        }
-        .memory-card.flipped { background-color: #fff; color: #d84315; }
-        .memory-card.matched { background-color: #81c784; color: white; border-color: #388e3c; cursor: default; }
+        /* Vocab Grid Styles */
+        .vocab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
+        @media (max-width: 480px) { .vocab-grid { grid-template-columns: repeat(2, 1fr); } }
+        .vocab-btn { background-color: #bbdefb; border: 3px solid #64b5f6; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; padding: 5px;}
+        .vocab-selected { background-color: #fff59d !important; border-color: #fbc02d !important; transform: scale(1.05); }
+        .vocab-matched { background-color: #c8e6c9 !important; border-color: #4caf50 !important; color: #2e7d32; cursor: default; opacity: 0.5; pointer-events: none;}
 
-        /* Quiz Styling */
-        .quiz-option {
-            display: block; width: 100%; background-color: #e0f7fa;
-            border: 2px solid #00bcd4; padding: 15px; margin: 10px 0;
-            border-radius: 10px; font-size: 1.1em; cursor: pointer;
-            transition: 0.2s; text-align: left;
-        }
-        .quiz-option:hover { background-color: #b2ebf2; }
-        .quiz-correct { background-color: #c8e6c9 !important; border-color: #4caf50 !important; }
-        .quiz-wrong { background-color: #ffcdd2 !important; border-color: #f44336 !important; }
+        /* Grammar Styles */
+        .grammar-box { background-color: #e1bee7; padding: 20px; border-radius: 15px; margin-bottom: 20px; font-size: 1.2em; font-weight: bold; color: #4a148c; border: 3px dashed #ba68c8; }
+        .grammar-option { display: inline-block; background-color: #fff; border: 2px solid #ab47bc; padding: 10px 20px; margin: 5px; border-radius: 10px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
+
+        /* Scramble Styles */
+        .scramble-box { background: #ffe0b2; padding: 20px; border-radius: 15px; border: 3px dashed #ff9800; font-size: 2em; letter-spacing: 5px; font-weight: 900; color: #e65100; margin-bottom: 15px;}
+        .scramble-input { font-size: 1.5em; padding: 10px; text-align: center; border-radius: 10px; border: 2px solid #ff9800; width: 80%; text-transform: uppercase; font-family: 'Nunito'; font-weight: bold;}
+
+        /* Reading Styles */
+        .reading-box { text-align: left; background: #fff9c4; padding: 20px; border-radius: 10px; font-size: 1.1em; line-height: 1.6; border: 2px solid #fbc02d; margin-bottom: 15px;}
+        .reading-option { display: block; width: 100%; background: #fff; border: 2px solid #fbc02d; padding: 10px; margin-bottom: 10px; border-radius: 10px; font-size: 1em; font-weight: bold; cursor: pointer; text-align: left;}
     </style>
 </head>
 <body>
 
-    <h1>🕵️ Secret Agent Academy</h1>
-    <p class="subtitle">Complete the missions to unlock your badge!</p>
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2>👋 Welcome to Cambridge Quest!</h2>
+            <p>Enter your agent name to save your progress.</p>
+            <input type="text" id="usernameInput" placeholder="Your Name (e.g., Ayesha)">
+            <br>
+            <button class="btn" onclick="login()">Start Adventure!</button>
+        </div>
+    </div>
+
+    <div class="user-panel">
+        <div class="user-info">
+            <div class="user-name" id="displayUsername">Agent ???</div>
+            <div style="font-size: 0.9em; color: #555;">Weekly Target: 100 Points</div>
+            <div class="progress-container">
+                <div class="progress-bar" id="targetBar"></div>
+            </div>
+        </div>
+        <div class="points-text">
+            <span id="scoreDisplay" style="font-size: 2em;">0</span> ⭐
+        </div>
+    </div>
+
+    <div class="character-container">
+        <div class="character" id="petCharacter">🐱</div>
+        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Let's get 100 points!"</div>
+    </div>
+
+    <button class="btn btn-reward" id="rewardBtn" onclick="claimReward()">🎁 CLAIM YOUR WEEKLY REWARD! 🎁</button>
 
     <div class="dashboard">
-        <div class="menu-card" onclick="openModal('memoryModal')">
-            <div class="menu-icon">🃏</div>
-            <div class="menu-title">Mission 1:<br>Word Match</div>
+        <div class="menu-card" onclick="openModal('vocabModal'); initVocabGame();">
+            <div class="menu-icon">🧩</div>
+            <div class="menu-title">Mission 1:<br>Vocab Match</div>
         </div>
-        <div class="menu-card" onclick="openModal('quizModal')">
-            <div class="menu-icon">🎯</div>
-            <div class="menu-title">Mission 2:<br>Grammar Rescue</div>
+        <div class="menu-card" onclick="openModal('grammarModal'); loadGrammarQuestion();">
+            <div class="menu-icon">🛠️</div>
+            <div class="menu-title">Mission 2:<br>Sentence Fixer</div>
         </div>
-        <div class="menu-card" onclick="openModal('readingModal')">
+        <div class="menu-card" onclick="openModal('scrambleModal'); loadScrambleWord();">
+            <div class="menu-icon">🔠</div>
+            <div class="menu-title">Mission 3:<br>Word Scramble</div>
+        </div>
+        <div class="menu-card" onclick="openModal('readingModal'); loadReadingQuest();">
             <div class="menu-icon">📜</div>
-            <div class="menu-title">Mission 3:<br>Secret Message</div>
-        </div>
-        <div class="menu-card" onclick="openExternalGame()">
-            <div class="menu-icon">🚀</div>
-            <div class="menu-title">Mission 4:<br>Boss Battle</div>
+            <div class="menu-title">Mission 4:<br>Reading Mystery</div>
         </div>
     </div>
 
-    <div id="memoryModal" class="modal">
+    <div id="vocabModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('memoryModal')">&times;</span>
-            <h2>🃏 Memory Match</h2>
-            <p>Find the matching English and Indonesian words!</p>
-            <div class="memory-grid" id="memoryBoard"></div>
-            <button class="btn" onclick="resetMemoryGame()">Restart Game</button>
+            <span class="close-btn" onclick="closeModal('vocabModal')">&times;</span>
+            <h2>🧩 Vocab Match</h2>
+            <p>Match the word with its meaning!</p>
+            <div class="vocab-grid" id="vocabBoard"></div>
+            <p id="vocabFeedback" class="feedback-text" style="color: #ff8f00;"></p>
+            <button class="btn" onclick="initVocabGame()">Shuffle New Words</button>
         </div>
     </div>
 
-    <div id="quizModal" class="modal">
+    <div id="grammarModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('quizModal')">&times;</span>
-            <h2>🎯 Grammar Rescue</h2>
-            <p id="questionText">The cat ____ sleeping on the sofa right now.</p>
-            <div id="quizOptions">
-                <button class="quiz-option" onclick="checkAnswer(this, false)">A. are</button>
-                <button class="quiz-option" onclick="checkAnswer(this, true)">B. is</button>
-                <button class="quiz-option" onclick="checkAnswer(this, false)">C. were</button>
-            </div>
-            <p id="quizFeedback" style="font-weight: bold; margin-top: 15px; font-size: 1.2em;"></p>
+            <span class="close-btn" onclick="closeModal('grammarModal')">&times;</span>
+            <h2>🛠️ Sentence Fixer</h2>
+            <p>Choose the right word to fix the broken sentence.</p>
+            <div class="grammar-box" id="grammarSentence"></div>
+            <div id="grammarOptions"></div>
+            <p id="grammarFeedback" class="feedback-text"></p>
+            <button class="btn" id="nextGrammarBtn" style="display:none;" onclick="nextGrammar()">Next Sentence ➔</button>
+        </div>
+    </div>
+
+    <div id="scrambleModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('scrambleModal')">&times;</span>
+            <h2>🔠 Word Scramble</h2>
+            <p id="scrambleClue" style="font-weight: bold; color: #e65100;">Clue: Very Big</p>
+            <div class="scramble-box" id="scrambleWord">O M E N R O S U</div>
+            <input type="text" id="scrambleInput" class="scramble-input" placeholder="Type word here..." autocomplete="off">
+            <br>
+            <button class="btn" onclick="checkScramble()">Check Answer</button>
+            <p id="scrambleFeedback" class="feedback-text"></p>
+            <button class="btn" id="nextScrambleBtn" style="display:none;" onclick="nextScramble()">Next Word ➔</button>
         </div>
     </div>
 
     <div id="readingModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal('readingModal')">&times;</span>
-            <h2>📜 The Secret Message</h2>
-            <div style="text-align: left; background: #fff9c4; padding: 20px; border-radius: 10px; font-size: 1.1em; line-height: 1.6;">
-                <p>Hello Agent,</p>
-                <p>We found a shiny golden key hidden under the <b>enormous</b> rock. To open the treasure box, you must be <b>courageous</b> and find the secret code inside the cave.</p>
-            </div>
-            <p style="margin-top: 20px; font-weight: bold;">What was hidden under the rock?</p>
-            <button class="btn" onclick="alert('Correct! You are super smart! 🌟')">A Golden Key</button>
-            <button class="btn" onclick="alert('Oops, try reading the message again! 🕵️')">A Treasure Box</button>
+            <h2>📜 Reading Mystery</h2>
+            <div class="reading-box" id="readingStory"></div>
+            <p id="readingQuestion" style="font-weight: bold; font-size: 1.1em;"></p>
+            <div id="readingOptions"></div>
+            <p id="readingFeedback" class="feedback-text"></p>
+            <button class="btn" id="nextReadingBtn" style="display:none;" onclick="nextReading()">Next Story ➔</button>
         </div>
     </div>
 
     <script>
-        // --- GENERAL MODAL LOGIC ---
+        // --- 1. LOCAL STORAGE & GLOBAL LOGIC ---
+        let currentScore = 0;
+        const TARGET_SCORE = 100;
+
+        window.onload = function() {
+            let savedName = localStorage.getItem("quest_username");
+            if (savedName) {
+                document.getElementById("loginScreen").style.display = "none";
+                document.getElementById("displayUsername").innerText = "Agent " + savedName;
+                let savedScore = localStorage.getItem("quest_score");
+                if (savedScore) { currentScore = parseInt(savedScore); }
+                updateScoreUI();
+            }
+        };
+
+        function login() {
+            let name = document.getElementById("usernameInput").value;
+            if (name.trim() === "") return alert("Please enter your name!");
+            localStorage.setItem("quest_username", name);
+            localStorage.setItem("quest_score", "0");
+            currentScore = 0;
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("displayUsername").innerText = "Agent " + name;
+            updateScoreUI();
+        }
+
+        function addScore(points) {
+            currentScore += points;
+            localStorage.setItem("quest_score", currentScore);
+            updateScoreUI();
+        }
+
+        function updateScoreUI() {
+            document.getElementById("scoreDisplay").innerText = currentScore;
+            let progress = (currentScore / TARGET_SCORE) * 100;
+            if (progress > 100) progress = 100;
+            document.getElementById("targetBar").style.width = progress + "%";
+            if (currentScore >= TARGET_SCORE) document.getElementById("rewardBtn").style.display = "block";
+        }
+
+        function claimReward() {
+            alert("Hooray! Beritahu Kakak tutor-mu bahwa kamu sudah mencapai 100 poin untuk mengambil hadiah aslimu!");
+        }
+
+        // --- 2. INTERACTIVE CHARACTER (NEKO) ---
+        const pet = document.getElementById("petCharacter");
+        function petReaction(type) {
+            pet.classList.remove("char-bounce");
+            void pet.offsetWidth; 
+            if (type === "correct") {
+                pet.innerText = "😻"; 
+                pet.classList.add("char-bounce");
+                setTimeout(() => { pet.innerText = "🐱"; }, 2000);
+            } else if (type === "wrong") {
+                pet.innerText = "🙀"; 
+                pet.style.transform = "rotate(15deg)";
+                setTimeout(() => { pet.innerText = "🐱"; pet.style.transform = "rotate(0deg)"; }, 800);
+            }
+        }
+
+        // --- 3. MODAL LOGIC ---
         function openModal(id) { document.getElementById(id).style.display = "block"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
-        function openExternalGame() { window.open("https://wordwall.net/", "_blank"); } // Ganti dengan link Wordwall-mu
+        window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
 
-        // Tutup modal jika klik di luar kotak
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
+        // Fungsi bantu acak array
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
             }
+            return array;
         }
 
-        // --- QUIZ LOGIC ---
-        function checkAnswer(element, isCorrect) {
-            let options = document.querySelectorAll('.quiz-option');
-            options.forEach(opt => opt.disabled = true); // Disable klik setelah jawab
-            
-            if(isCorrect) {
-                element.classList.add('quiz-correct');
-                document.getElementById('quizFeedback').innerText = "🎉 Excellent! That is correct!";
-                document.getElementById('quizFeedback').style.color = "#4caf50";
-            } else {
-                element.classList.add('quiz-wrong');
-                document.getElementById('quizFeedback').innerText = "❌ Oops, not quite right. It should be 'is'!";
-                document.getElementById('quizFeedback').style.color = "#f44336";
-            }
-        }
-
-        // --- MEMORY GAME LOGIC ---
-        const memoryWords = [
-            "Big", "Besar", "Small", "Kecil", 
-            "Fast", "Cepat", "Slow", "Lambat"
+        // --- GAME 1: VOCAB DETECTIVE ---
+        const masterVocabPairs = [
+            { word: "Enormous", match: "Very Big" }, { word: "Exhausted", match: "Very Tired" },
+            { word: "Fascinating", match: "Very Interesting" }, { word: "Terrified", match: "Very Scared" },
+            { word: "Starving", match: "Very Hungry" }, { word: "Freezing", match: "Very Cold" },
+            { word: "Hilarious", match: "Very Funny" }, { word: "Tiny", match: "Very Small" },
+            { word: "Brilliant", match: "Very Clever" }, { word: "Gorgeous", match: "Very Beautiful" }
         ];
-        let memoryValues = [];
-        let memoryTileIds = [];
-        let tilesFlipped = 0;
+        let activePairs = [], selectedVocab = null, vocabMatchesFound = 0;
 
-        // Shuffle Array
-        Array.prototype.memory_tile_shuffle = function(){
-            let i = this.length, j, temp;
-            while(--i > 0){
-                j = Math.floor(Math.random() * (i+1));
-                temp = this[j];
-                this[j] = this[i];
-                this[i] = temp;
-            }
+        function initVocabGame() {
+            vocabMatchesFound = 0; selectedVocab = null;
+            document.getElementById('vocabFeedback').innerText = "";
+            let shuffledMaster = shuffleArray([...masterVocabPairs]);
+            activePairs = shuffledMaster.slice(0, 6);
+            let allItems = [];
+            activePairs.forEach(p => { allItems.push(p.word); allItems.push(p.match); });
+            allItems = shuffleArray(allItems);
+            
+            let board = document.getElementById('vocabBoard');
+            board.innerHTML = "";
+            allItems.forEach(item => {
+                let btn = document.createElement("button");
+                btn.className = "vocab-btn"; btn.innerText = item;
+                btn.onclick = () => selectVocab(btn, item);
+                board.appendChild(btn);
+            });
         }
 
-        function resetMemoryGame() {
-            tilesFlipped = 0;
-            let output = '';
-            memoryWords.memory_tile_shuffle();
-            for(let i = 0; i < memoryWords.length; i++){
-                output += '<div class="memory-card" id="tile_'+i+'" onclick="memoryFlipTile(this,\''+memoryWords[i]+'\')"></div>';
-            }
-            document.getElementById('memoryBoard').innerHTML = output;
-        }
-
-        // Cek kecocokan (bisa disesuaikan kata-katanya)
-        const matchDict = { "Big":"Besar", "Besar":"Big", "Small":"Kecil", "Kecil":"Small", "Fast":"Cepat", "Cepat":"Fast", "Slow":"Lambat", "Lambat":"Slow" };
-
-        function memoryFlipTile(tile, val){
-            if(tile.innerHTML == "" && memoryValues.length < 2){
-                tile.style.background = '#fff';
-                tile.style.color = '#d84315';
-                tile.innerHTML = val;
-                if(memoryValues.length == 0){
-                    memoryValues.push(val);
-                    memoryTileIds.push(tile.id);
-                } else if(memoryValues.length == 1){
-                    memoryValues.push(val);
-                    memoryTileIds.push(tile.id);
-                    if(matchDict[memoryValues[0]] === memoryValues[1]){
-                        tilesFlipped += 2;
-                        document.getElementById(memoryTileIds[0]).classList.add('matched');
-                        document.getElementById(memoryTileIds[1]).classList.add('matched');
-                        memoryValues = []; memoryTileIds = [];
-                        if(tilesFlipped == memoryWords.length){
-                            setTimeout(() => { alert("🎉 Mission Accomplished! You cleared the board!"); }, 500);
-                        }
-                    } else {
-                        setTimeout(flipBack, 700);
-                    }
+        function selectVocab(btn, text) {
+            if (btn.classList.contains('vocab-matched')) return;
+            if (!selectedVocab) {
+                btn.classList.add('vocab-selected');
+                selectedVocab = { btn: btn, text: text };
+            } else {
+                if (selectedVocab.btn === btn) {
+                    btn.classList.remove('vocab-selected'); selectedVocab = null; return;
                 }
+                let isMatch = activePairs.some(p => (p.word === text && p.match === selectedVocab.text) || (p.match === text && p.word === selectedVocab.text));
+                if (isMatch) {
+                    btn.classList.add('vocab-matched'); selectedVocab.btn.classList.remove('vocab-selected'); selectedVocab.btn.classList.add('vocab-matched');
+                    vocabMatchesFound++;
+                    document.getElementById('vocabFeedback').innerText = "✨ Perfect Match! +5 Points";
+                    document.getElementById('vocabFeedback').style.color = "#4caf50";
+                    addScore(5); petReaction("correct");
+                    if(vocabMatchesFound === activePairs.length) {
+                        setTimeout(() => alert("🎉 You matched all words! You are a Vocab Master!"), 500);
+                    }
+                } else {
+                    btn.classList.add('wrong-shake'); selectedVocab.btn.classList.remove('vocab-selected');
+                    document.getElementById('vocabFeedback').innerText = "Oops! Try again.";
+                    document.getElementById('vocabFeedback').style.color = "#e53935";
+                    petReaction("wrong");
+                    setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
+                }
+                selectedVocab = null;
             }
         }
 
-        function flipBack(){
-            let tile_1 = document.getElementById(memoryTileIds[0]);
-            let tile_2 = document.getElementById(memoryTileIds[1]);
-            tile_1.style.background = '#ffb74d'; tile_1.innerHTML = "";
-            tile_2.style.background = '#ffb74d'; tile_2.innerHTML = "";
-            memoryValues = []; memoryTileIds = [];
+        // --- GAME 2: SENTENCE FIXER ---
+        const grammarQ = [
+            { s: "Yesterday, I ___ to the park.", opt: ["go", "goes", "went"], a: "went" },
+            { s: "Neko ___ sleeping on the sofa right now.", opt: ["is", "are", "were"], a: "is" },
+            { s: "She has never ___ sushi before.", opt: ["eat", "ate", "eaten"], a: "eaten" },
+            { s: "If it rains, we ___ stay at home.", opt: ["would", "will", "did"], a: "will" }
+        ];
+        let currG = 0;
+
+        function loadGrammarQuestion() {
+            if (currG >= grammarQ.length) currG = 0;
+            let q = grammarQ[currG];
+            document.getElementById('grammarSentence').innerHTML = q.s.replace("___", "<b>___</b>");
+            document.getElementById('grammarFeedback').innerText = "";
+            document.getElementById('nextGrammarBtn').style.display = "none";
+            let optDiv = document.getElementById('grammarOptions');
+            optDiv.innerHTML = "";
+            q.opt.forEach(o => {
+                let btn = document.createElement("button");
+                btn.className = "grammar-option"; btn.innerText = o;
+                btn.onclick = () => checkGrammar(btn, o, q.a);
+                optDiv.appendChild(btn);
+            });
         }
 
-        // Initialize game on load
-        window.onload = resetMemoryGame;
-    </script>
+        function checkGrammar(btn, selected, correct) {
+            if (selected === correct) {
+                document.getElementById('grammarSentence').innerHTML = grammarQ[currG].s.replace("___", "<b style='color:#4caf50;'>" + selected + "</b>");
+                document.getElementById('grammarFeedback').innerText = "🌟 Correct! +10 Points!";
+                document.getElementById('grammarFeedback').style.color = "#4caf50";
+                document.getElementById('nextGrammarBtn').style.display = "inline-block";
+                addScore(10); petReaction("correct");
+                document.querySelectorAll('.grammar-option').forEach(b => b.style.pointerEvents = "none");
+            } else {
+                btn.classList.add('wrong-shake');
+                document.getElementById('grammarFeedback').innerText = "❌ Oops, try again!";
+                document.getElementById('grammarFeedback').style.color = "#e53935";
+                petReaction("wrong");
+                setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
+            }
+        }
+        function nextGrammar() { currG++; loadGrammarQuestion(); }
 
+        // --- GAME 3: WORD SCRAMBLE ---
+        const scrambleWords = [
+            { w: "ENORMOUS", c: "Very Big" }, { w: "STARVING", c: "Very Hungry" },
+            { w: "FREEZING", c: "Very Cold" }, { w: "BRILLIANT", c: "Very Clever" }
+        ];
+        let currS = 0;
+
+        function loadScrambleWord() {
+            if (currS >= scrambleWords.length) currS = 0;
+            let wordObj = scrambleWords[currS];
+            document.getElementById('scrambleClue').innerText = "Clue: " + wordObj.c;
+            document.getElementById('scrambleInput').value = "";
+            document.getElementById('scrambleFeedback').innerText = "";
+            document.getElementById('nextScrambleBtn').style.display = "none";
+            
+            // Acak huruf
+            let arr = wordObj.w.split('');
+            arr = shuffleArray(arr);
+            document.getElementById('scrambleWord').innerText = arr.join(' ');
+        }
+
+        function checkScramble() {
+            let input = document.getElementById('scrambleInput').value.toUpperCase().trim();
+            let correct = scrambleWords[currS].w;
+            if (input === correct) {
+                document.getElementById('scrambleFeedback').innerText = "🌟 Brilliant! +10 Points!";
+                document.getElementById('scrambleFeedback').style.color = "#4caf50";
+                document.getElementById('nextScrambleBtn').style.display = "inline-block";
+                addScore(10); petReaction("correct");
+            } else {
+                document.getElementById('scrambleInput').classList.add('wrong-shake');
+                document.getElementById('scrambleFeedback').innerText = "❌ That's not it. Try rearranging the letters!";
+                document.getElementById('scrambleFeedback').style.color = "#e53935";
+                petReaction("wrong");
+                setTimeout(() => { document.getElementById('scrambleInput').classList.remove('wrong-shake'); }, 500);
+            }
+        }
+        function nextScramble() { currS++; loadScrambleWord(); }
+
+        // --- GAME 4: READING MYSTERY ---
+        const readingStory = [
+            { text: "Neko the cat was walking in the garden. Suddenly, he saw a tiny, shiny object under the rose bush. It was a silver key!", q: "Where did Neko find the key?", opt: ["Under the big tree", "Under the rose bush", "Inside the house"], a: "Under the rose bush" },
+            { text: "Tom felt exhausted after running in the park for two hours. He sat on a bench and drank a whole bottle of cold water.", q: "Why did Tom drink cold water?", opt: ["Because he was hungry", "Because he felt freezing", "Because he was exhausted after running"], a: "Because he was exhausted after running" }
+        ];
+        let currR = 0;
+
+        function loadReadingQuest() {
+            if (currR >= readingStory.length) currR = 0;
+            let r = readingStory[currR];
+            document.getElementById('readingStory').innerText = r.text;
+            document.getElementById('readingQuestion').innerText = r.q;
+            document.getElementById('readingFeedback').innerText = "";
+            document.getElementById('nextReadingBtn').style.display = "none";
+            
+            let optDiv = document.getElementById('readingOptions');
+            optDiv.innerHTML = "";
+            r.opt.forEach(o => {
+                let btn = document.createElement("button");
+                btn.className = "reading-option"; btn.innerText = o;
+                btn.onclick = () => checkReading(btn, o, r.a);
+                optDiv.appendChild(btn);
+            });
+        }
+
+        function checkReading(btn, selected, correct) {
+            if (selected === correct) {
+                btn.style.backgroundColor = "#c8e6c9";
+                btn.style.borderColor = "#4caf50";
+                document.getElementById('readingFeedback').innerText = "🌟 Great Reading! +15 Points!";
+                document.getElementById('readingFeedback').style.color = "#4caf50";
+                document.getElementById('nextReadingBtn').style.display = "inline-block";
+                addScore(15); petReaction("correct");
+                document.querySelectorAll('.reading-option').forEach(b => b.style.pointerEvents = "none");
+            } else {
+                btn.classList.add('wrong-shake');
+                document.getElementById('readingFeedback').innerText = "❌ Look closely at the story again!";
+                document.getElementById('readingFeedback').style.color = "#e53935";
+                petReaction("wrong");
+                setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
+            }
+        }
+        function nextReading() { currR++; loadReadingQuest(); }
+
+    </script>
 </body>
 </html>
