@@ -21,6 +21,8 @@
         .progress-container { width: 200px; background-color: #e0e0e0; border-radius: 15px; overflow: hidden; height: 20px; margin-top: 5px; }
         .progress-bar { height: 100%; background-color: #ffb300; width: 0%; transition: width 0.5s ease-in-out; }
         .points-text { font-weight: bold; color: #f57f17; }
+        .score-minus { animation: popMinus 0.5s ease-out; color: #e53935 !important; }
+        @keyframes popMinus { 0% { transform: scale(1); } 50% { transform: scale(1.5); color: #d32f2f; } 100% { transform: scale(1); } }
 
         /* --- CHARACTER INTERACTIVE --- */
         .character-container { margin: 10px auto; height: 120px; }
@@ -98,7 +100,7 @@
 
     <div class="character-container">
         <div class="character" id="petCharacter">🐱</div>
-        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Let's get 100 points!"</div>
+        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Be careful, wrong answers lose points!"</div>
     </div>
 
     <button class="btn btn-reward" id="rewardBtn" onclick="claimReward()">🎁 CLAIM YOUR WEEKLY REWARD! 🎁</button>
@@ -198,9 +200,21 @@
             updateScoreUI();
         }
 
+        // FUNGSI UPDATE SKOR (MENERIMA MINUS)
         function addScore(points) {
             currentScore += points;
+            // Kunci skor agar tidak kurang dari 0
+            if (currentScore < 0) currentScore = 0; 
+            
             localStorage.setItem("quest_score", currentScore);
+            
+            // Animasi efek minus
+            let scoreUI = document.getElementById("scoreDisplay");
+            if (points < 0) {
+                scoreUI.classList.add("score-minus");
+                setTimeout(() => { scoreUI.classList.remove("score-minus"); }, 500);
+            }
+            
             updateScoreUI();
         }
 
@@ -237,7 +251,6 @@
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
         window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
 
-        // Fungsi bantu acak array
         function shuffleArray(array) {
             let curId = array.length;
             while (0 !== curId) {
@@ -300,8 +313,9 @@
                     }
                 } else {
                     btn.classList.add('wrong-shake'); selectedVocab.btn.classList.remove('vocab-selected');
-                    document.getElementById('vocabFeedback').innerText = "Oops! Try again.";
+                    document.getElementById('vocabFeedback').innerText = "Oops! -2 Points. Try again.";
                     document.getElementById('vocabFeedback').style.color = "#e53935";
+                    addScore(-2); // PENGURANGAN POIN
                     petReaction("wrong");
                     setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
                 }
@@ -344,8 +358,9 @@
                 document.querySelectorAll('.grammar-option').forEach(b => b.style.pointerEvents = "none");
             } else {
                 btn.classList.add('wrong-shake');
-                document.getElementById('grammarFeedback').innerText = "❌ Oops, try again!";
+                document.getElementById('grammarFeedback').innerText = "❌ Oops! -3 Points. Try again.";
                 document.getElementById('grammarFeedback').style.color = "#e53935";
+                addScore(-3); // PENGURANGAN POIN
                 petReaction("wrong");
                 setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
             }
@@ -367,7 +382,6 @@
             document.getElementById('scrambleFeedback').innerText = "";
             document.getElementById('nextScrambleBtn').style.display = "none";
             
-            // Acak huruf
             let arr = wordObj.w.split('');
             arr = shuffleArray(arr);
             document.getElementById('scrambleWord').innerText = arr.join(' ');
@@ -383,8 +397,9 @@
                 addScore(10); petReaction("correct");
             } else {
                 document.getElementById('scrambleInput').classList.add('wrong-shake');
-                document.getElementById('scrambleFeedback').innerText = "❌ That's not it. Try rearranging the letters!";
+                document.getElementById('scrambleFeedback').innerText = "❌ Not quite! -3 Points.";
                 document.getElementById('scrambleFeedback').style.color = "#e53935";
+                addScore(-3); // PENGURANGAN POIN
                 petReaction("wrong");
                 setTimeout(() => { document.getElementById('scrambleInput').classList.remove('wrong-shake'); }, 500);
             }
@@ -427,8 +442,9 @@
                 document.querySelectorAll('.reading-option').forEach(b => b.style.pointerEvents = "none");
             } else {
                 btn.classList.add('wrong-shake');
-                document.getElementById('readingFeedback').innerText = "❌ Look closely at the story again!";
+                document.getElementById('readingFeedback').innerText = "❌ Look closely! -5 Points.";
                 document.getElementById('readingFeedback').style.color = "#e53935";
+                addScore(-5); // PENGURANGAN POIN
                 petReaction("wrong");
                 setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
             }
