@@ -40,9 +40,8 @@
 
         /* --- MODAL GENERAL --- */
         .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); overflow-y: auto;}
-        .modal-content { background-color: #fff; margin: 5% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 500px; text-align: center; position: relative; border: 5px dashed #ffb300; margin-bottom: 50px;}
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 550px; text-align: center; position: relative; border: 5px dashed #ffb300; margin-bottom: 50px;}
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; color: #aaa; cursor: pointer; }
-        .close-btn:hover { color: #f44336; }
 
         .btn { background-color: #ffb300; color: #fff; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn:hover { background-color: #ff8f00; }
@@ -56,8 +55,8 @@
         /* Vocab Grid Styles */
         .vocab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
         @media (max-width: 480px) { .vocab-grid { grid-template-columns: repeat(2, 1fr); } }
-        .vocab-btn { background-color: #bbdefb; border: 3px solid #64b5f6; border-radius: 12px; font-size: 1em; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 60px; padding: 5px;}
-        .vocab-selected { background-color: #fff59d !important; border-color: #fbc02d !important; transform: scale(1.05); }
+        .vocab-btn { background-color: #bbdefb; border: 3px solid #64b5f6; border-radius: 12px; font-size: 0.9em; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 70px; padding: 5px;}
+        .vocab-selected { background-color: #fff59d !important; border-color: #fbc02d !important; }
         .vocab-matched { background-color: #c8e6c9 !important; border-color: #4caf50 !important; color: #2e7d32; cursor: default; opacity: 0.5; pointer-events: none;}
 
         /* Grammar Styles */
@@ -65,7 +64,7 @@
         .grammar-option { display: inline-block; background-color: #fff; border: 2px solid #ab47bc; padding: 10px 20px; margin: 5px; border-radius: 10px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
 
         /* Scramble Styles */
-        .scramble-box { background: #ffe0b2; padding: 20px; border-radius: 15px; border: 3px dashed #ff9800; font-size: 2em; letter-spacing: 5px; font-weight: 900; color: #e65100; margin-bottom: 15px;}
+        .scramble-box { background: #ffe0b2; padding: 20px; border-radius: 15px; border: 3px dashed #ff9800; font-size: 1.8em; letter-spacing: 5px; font-weight: 900; color: #e65100; margin-bottom: 15px;}
         .scramble-input { font-size: 1.5em; padding: 10px; text-align: center; border-radius: 10px; border: 2px solid #ff9800; width: 80%; text-transform: uppercase; font-family: 'Nunito'; font-weight: bold;}
 
         /* Reading Styles */
@@ -77,18 +76,18 @@
 
     <div id="loginScreen">
         <div class="login-box">
-            <h2>👋 Welcome to Cambridge Quest!</h2>
-            <p>Enter your agent name to save your progress.</p>
-            <input type="text" id="usernameInput" placeholder="Your Name (e.g., Ayesha)">
+            <h2>👋 Welcome Agent!</h2>
+            <p>Enter your name to start the mission.</p>
+            <input type="text" id="usernameInput" placeholder="Agent Name...">
             <br>
-            <button class="btn" onclick="login()">Start Adventure!</button>
+            <button class="btn" onclick="login()">Enter Headquarters</button>
         </div>
     </div>
 
     <div class="user-panel">
         <div class="user-info">
             <div class="user-name" id="displayUsername">Agent ???</div>
-            <div style="font-size: 0.9em; color: #555;">Weekly Target: 100 Points</div>
+            <div style="font-size: 0.9em; color: #555;">Target: 300 Points</div>
             <div class="progress-container">
                 <div class="progress-bar" id="targetBar"></div>
             </div>
@@ -100,10 +99,10 @@
 
     <div class="character-container">
         <div class="character" id="petCharacter">🐱</div>
-        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Be careful, wrong answers lose points!"</div>
+        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Reach 300 points for a surprise!"</div>
     </div>
 
-    <button class="btn btn-reward" id="rewardBtn" onclick="claimReward()">🎁 CLAIM YOUR WEEKLY REWARD! 🎁</button>
+    <button class="btn btn-reward" id="rewardBtn" onclick="claimReward()">🎁 CLAIM YOUR 300 POINTS REWARD! 🎁</button>
 
     <div class="dashboard">
         <div class="menu-card" onclick="openModal('vocabModal'); initVocabGame();">
@@ -124,333 +123,123 @@
         </div>
     </div>
 
-    <div id="vocabModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('vocabModal')">&times;</span>
-            <h2>🧩 Vocab Match</h2>
-            <p>Match the word with its meaning!</p>
-            <div class="vocab-grid" id="vocabBoard"></div>
-            <p id="vocabFeedback" class="feedback-text" style="color: #ff8f00;"></p>
-            <button class="btn" onclick="initVocabGame()">Shuffle New Words</button>
-        </div>
-    </div>
-
-    <div id="grammarModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('grammarModal')">&times;</span>
-            <h2>🛠️ Sentence Fixer</h2>
-            <p>Choose the right word to fix the broken sentence.</p>
-            <div class="grammar-box" id="grammarSentence"></div>
-            <div id="grammarOptions"></div>
-            <p id="grammarFeedback" class="feedback-text"></p>
-            <button class="btn" id="nextGrammarBtn" style="display:none;" onclick="nextGrammar()">Next Sentence ➔</button>
-        </div>
-    </div>
-
-    <div id="scrambleModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('scrambleModal')">&times;</span>
-            <h2>🔠 Word Scramble</h2>
-            <p id="scrambleClue" style="font-weight: bold; color: #e65100;">Clue: Very Big</p>
-            <div class="scramble-box" id="scrambleWord">O M E N R O S U</div>
-            <input type="text" id="scrambleInput" class="scramble-input" placeholder="Type word here..." autocomplete="off">
-            <br>
-            <button class="btn" onclick="checkScramble()">Check Answer</button>
-            <p id="scrambleFeedback" class="feedback-text"></p>
-            <button class="btn" id="nextScrambleBtn" style="display:none;" onclick="nextScramble()">Next Word ➔</button>
-        </div>
-    </div>
-
-    <div id="readingModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('readingModal')">&times;</span>
-            <h2>📜 Reading Mystery</h2>
-            <div class="reading-box" id="readingStory"></div>
-            <p id="readingQuestion" style="font-weight: bold; font-size: 1.1em;"></p>
-            <div id="readingOptions"></div>
-            <p id="readingFeedback" class="feedback-text"></p>
-            <button class="btn" id="nextReadingBtn" style="display:none;" onclick="nextReading()">Next Story ➔</button>
-        </div>
-    </div>
+    <div id="vocabModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('vocabModal')">&times;</span><h2>🧩 Vocab Match</h2><p>Match the word with its definition!</p><div class="vocab-grid" id="vocabBoard"></div><p id="vocabFeedback" class="feedback-text"></p><button class="btn" onclick="initVocabGame()">New Words</button></div></div>
+    <div id="grammarModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('grammarModal')">&times;</span><h2>🛠️ Sentence Fixer</h2><p>Fix the broken grammar!</p><div class="grammar-box" id="grammarSentence"></div><div id="grammarOptions"></div><p id="grammarFeedback" class="feedback-text"></p><button class="btn" id="nextGrammarBtn" style="display:none;" onclick="nextGrammar()">Next ➔</button></div></div>
+    <div id="scrambleModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('scrambleModal')">&times;</span><h2>🔠 Word Scramble</h2><p id="scrambleClue" style="font-weight: bold; color: #e65100;">...</p><div class="scramble-box" id="scrambleWord">...</div><input type="text" id="scrambleInput" class="scramble-input" autocomplete="off"><br><button class="btn" onclick="checkScramble()">Check</button><p id="scrambleFeedback" class="feedback-text"></p><button class="btn" id="nextScrambleBtn" style="display:none;" onclick="nextScramble()">Next ➔</button></div></div>
+    <div id="readingModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('readingModal')">&times;</span><h2>📜 Reading Mystery</h2><div class="reading-box" id="readingStory"></div><p id="readingQuestion" style="font-weight: bold;"></p><div id="readingOptions"></div><p id="readingFeedback" class="feedback-text"></p><button class="btn" id="nextReadingBtn" style="display:none;" onclick="nextReading()">Next ➔</button></div></div>
 
     <script>
-        // --- 1. LOCAL STORAGE & GLOBAL LOGIC ---
-        let currentScore = 0;
-        const TARGET_SCORE = 100;
+        let currentScore = 0; const TARGET_SCORE = 300;
+        
+        // 1. DATA SOAL (Minimal 10 tiap game)
+        const vPool = [
+            {w:"Explicit", m:"Clearly stated"}, {w:"Implicit", m:"Hidden/Suggested"}, {w:"Factual", m:"Based on facts"}, {w:"Conclude", m:"Decide at the end"}, {w:"Identify", m:"Recognize/Find"},
+            {w:"Compare", m:"Find similarities"}, {w:"Personify", m:"Give human traits"}, {w:"Feature", m:"Important part"}, {w:"Glossary", m:"Mini dictionary"}, {w:"Passive", m:"Receiving action"}
+        ];
+        const gPool = [
+            {s:"The girl ___ bag is blue is my friend.", o:["who","whose","where"], a:"whose"},
+            {s:"The pizza ___ by the chef right now.", o:["is cooked","was cooked","cooks"], a:"is cooked"},
+            {s:"That is the park ___ we played yesterday.", o:["where","which","who"], a:"where"},
+            {s:"A huge dinosaur skeleton ___ in the museum.", o:["is found","was found","find"], a:"was found"},
+            {s:"The boy ___ won the race is very fast.", o:["who","which","whose"], a:"who"},
+            {s:"The window ___ by the ball yesterday.", o:["is broken","was broken","break"], a:"was broken"},
+            {s:"I love the book ___ has many pictures.", o:["who","where","that"], a:"that"},
+            {s:"The lady ___ is wearing a hat is nice.", o:["who","whose","which"], a:"who"},
+            {s:"The letters ___ every morning.", o:["is delivered","are delivered","delivered"], a:"are delivered"},
+            {s:"This house ___ in 1990.", o:["was built","is built","build"], a:"was built"}
+        ];
+        const sPool = [
+            {w:"SIMILE", c:"Uses 'like' or 'as'"}, {w:"METAPHOR", c:"Direct comparison"}, {w:"CAPTION", c:"Text under a photo"}, {w:"GLOSSARY", c:"List of meanings"}, {w:"HEADING", c:"Main title"},
+            {w:"INDEX", c:"Page list at the back"}, {w:"PASSIVE", c:"Focus on the object"}, {w:"FACTUAL", c:"True information"}, {w:"EXPLICIT", c:"Stated clearly"}, {w:"WHICH", c:"Relative pronoun for things"}
+        ];
+        const rPool = [
+            {t:"Penguins cannot fly, but they are great swimmers.", q:"Why are they 'unlike other birds'?", o:["They swim","They cannot fly","They lay eggs"], a:"They cannot fly"},
+            {t:"Male penguins huddle to stay warm in storms.", q:"What is 'huddle'?", o:["To swim","To stand together","To run"], a:"To stand together"},
+            {t:"The stars danced in the sky.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Personification"},
+            {t:"My heart is a stone.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Metaphor"},
+            {t:"He is as brave as a lion.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Simile"},
+            {t:"Blue whales live in all oceans except the Arctic.", q:"Explicit: Where do they NOT live?", o:["The Arctic","Atlantic","Pacific"], a:"The Arctic"},
+            {t:"Check the back of the book for word meanings.", q:"Which feature should you use?", o:["Index","Glossary","Heading"], a:"Glossary"},
+            {t:"The classroom was a zoo today!", q:"What does this mean?", o:["There were lions","It was chaotic/loud","It was a field trip"], a:"It was chaotic/loud"},
+            {t:"Time is money.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Metaphor"},
+            {t:"The wind whispered through the trees.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Personification"}
+        ];
 
+        // 2. CORE SYSTEM
         window.onload = function() {
-            let savedName = localStorage.getItem("quest_username");
-            if (savedName) {
-                document.getElementById("loginScreen").style.display = "none";
-                document.getElementById("displayUsername").innerText = "Agent " + savedName;
-                let savedScore = localStorage.getItem("quest_score");
-                if (savedScore) { currentScore = parseInt(savedScore); }
-                updateScoreUI();
-            }
-        };
-
-        function login() {
-            let name = document.getElementById("usernameInput").value;
-            if (name.trim() === "") return alert("Please enter your name!");
-            localStorage.setItem("quest_username", name);
-            localStorage.setItem("quest_score", "0");
-            currentScore = 0;
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("displayUsername").innerText = "Agent " + name;
-            updateScoreUI();
+            let n = localStorage.getItem("quest_username");
+            if(n){ document.getElementById("loginScreen").style.display="none"; document.getElementById("displayUsername").innerText="Agent "+n; 
+            currentScore=parseInt(localStorage.getItem("quest_score")||0); updateScoreUI(); }
         }
+        function login(){ let n=document.getElementById("usernameInput").value; if(!n)return; localStorage.setItem("quest_username",n); location.reload(); }
+        function addScore(p){ currentScore+=p; if(currentScore<0)currentScore=0; localStorage.setItem("quest_score",currentScore); updateScoreUI(); let s=document.getElementById("scoreDisplay"); if(p<0){s.classList.add("score-minus"); setTimeout(()=>s.classList.remove("score-minus"),500);} }
+        function updateScoreUI(){ document.getElementById("scoreDisplay").innerText=currentScore; let prg=(currentScore/TARGET_SCORE)*100; document.getElementById("targetBar").style.width=Math.min(prg,100)+"%"; if(currentScore>=TARGET_SCORE)document.getElementById("rewardBtn").style.display="block"; }
+        function petReaction(t){ if(currentScore>=TARGET_SCORE)return; let p=document.getElementById("petCharacter"); p.classList.remove("char-bounce"); void p.offsetWidth; if(t==="correct"){p.innerText="😻"; p.classList.add("char-bounce"); setTimeout(()=>p.innerText="🐱",2000);} else {p.innerText="🙀"; p.style.transform="rotate(15deg)"; setTimeout(()=>{p.innerText="🐱"; p.style.transform="rotate(0deg)"},800);} }
+        function openModal(id){ document.getElementById(id).style.display="block"; }
+        function closeModal(id){ document.getElementById(id).style.display="none"; }
+        function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
 
-        // FUNGSI UPDATE SKOR (MENERIMA MINUS)
-        function addScore(points) {
-            currentScore += points;
-            // Kunci skor agar tidak kurang dari 0
-            if (currentScore < 0) currentScore = 0; 
-            
-            localStorage.setItem("quest_score", currentScore);
-            
-            // Animasi efek minus
-            let scoreUI = document.getElementById("scoreDisplay");
-            if (points < 0) {
-                scoreUI.classList.add("score-minus");
-                setTimeout(() => { scoreUI.classList.remove("score-minus"); }, 500);
-            }
-            
-            updateScoreUI();
+        // 3. GAME LOGIC
+        // MISSION 1: VOCAB
+        let vPairs=[], vSel=null, vCount=0;
+        function initVocabGame(){
+            vCount=0; vSel=null; document.getElementById('vocabFeedback').innerText="";
+            let raw=shuffle([...vPool]).slice(0,6); vPairs=raw;
+            let items=shuffle(raw.flatMap(p=>[p.w, p.m]));
+            let b=document.getElementById('vocabBoard'); b.innerHTML="";
+            items.forEach(i=>{ let btn=document.createElement("button"); btn.className="vocab-btn"; btn.innerText=i; btn.onclick=()=>selVocab(btn,i); b.appendChild(btn); });
         }
-
-        function updateScoreUI() {
-            document.getElementById("scoreDisplay").innerText = currentScore;
-            let progress = (currentScore / TARGET_SCORE) * 100;
-            if (progress > 100) progress = 100;
-            document.getElementById("targetBar").style.width = progress + "%";
-            if (currentScore >= TARGET_SCORE) document.getElementById("rewardBtn").style.display = "block";
-        }
-
-        function claimReward() {
-            alert("Hooray! Beritahu Kakak tutor-mu bahwa kamu sudah mencapai 100 poin untuk mengambil hadiah aslimu!");
-        }
-
-        // --- 2. INTERACTIVE CHARACTER (NEKO) ---
-        const pet = document.getElementById("petCharacter");
-        function petReaction(type) {
-            pet.classList.remove("char-bounce");
-            void pet.offsetWidth; 
-            if (type === "correct") {
-                pet.innerText = "😻"; 
-                pet.classList.add("char-bounce");
-                setTimeout(() => { pet.innerText = "🐱"; }, 2000);
-            } else if (type === "wrong") {
-                pet.innerText = "🙀"; 
-                pet.style.transform = "rotate(15deg)";
-                setTimeout(() => { pet.innerText = "🐱"; pet.style.transform = "rotate(0deg)"; }, 800);
+        function selVocab(btn,txt){
+            if(btn.classList.contains('vocab-matched'))return;
+            if(!vSel){ btn.classList.add('vocab-selected'); vSel={btn,txt}; }
+            else {
+                if(vSel.btn===btn){ btn.classList.remove('vocab-selected'); vSel=null; return; }
+                let match=vPairs.some(p=>(p.w===txt && p.m===vSel.txt)||(p.m===txt && p.w===vSel.txt));
+                if(match){ btn.classList.add('vocab-matched'); vSel.btn.classList.remove('vocab-selected'); vSel.btn.classList.add('vocab-matched'); vCount++; addScore(5); petReaction("correct"); }
+                else { btn.classList.add('wrong-shake'); vSel.btn.classList.remove('vocab-selected'); addScore(-2); petReaction("wrong"); setTimeout(()=>btn.classList.remove('wrong-shake'),500); }
+                vSel=null;
             }
         }
 
-        // --- 3. MODAL LOGIC ---
-        function openModal(id) { document.getElementById(id).style.display = "block"; }
-        function closeModal(id) { document.getElementById(id).style.display = "none"; }
-        window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = "none"; }
-
-        function shuffleArray(array) {
-            let curId = array.length;
-            while (0 !== curId) {
-                let randId = Math.floor(Math.random() * curId);
-                curId -= 1;
-                let tmp = array[curId];
-                array[curId] = array[randId];
-                array[randId] = tmp;
-            }
-            return array;
+        // MISSION 2: GRAMMAR
+        let cg=0; let gList=shuffle([...gPool]);
+        function loadGrammarQuestion(){
+            if(cg>=gList.length){cg=0; gList=shuffle([...gPool]);} let q=gList[cg];
+            document.getElementById('grammarSentence').innerHTML=q.s.replace("___","<b>___</b>");
+            document.getElementById('grammarFeedback').innerText=""; document.getElementById('nextGrammarBtn').style.display="none";
+            let d=document.getElementById('grammarOptions'); d.innerHTML="";
+            q.o.forEach(o=>{ let b=document.createElement("button"); b.className="grammar-option"; b.innerText=o; b.onclick=()=>checkG(b,o,q.a); d.appendChild(b); });
         }
-
-        // --- GAME 1: VOCAB DETECTIVE ---
-        const masterVocabPairs = [
-            { word: "Enormous", match: "Very Big" }, { word: "Exhausted", match: "Very Tired" },
-            { word: "Fascinating", match: "Very Interesting" }, { word: "Terrified", match: "Very Scared" },
-            { word: "Starving", match: "Very Hungry" }, { word: "Freezing", match: "Very Cold" },
-            { word: "Hilarious", match: "Very Funny" }, { word: "Tiny", match: "Very Small" },
-            { word: "Brilliant", match: "Very Clever" }, { word: "Gorgeous", match: "Very Beautiful" }
-        ];
-        let activePairs = [], selectedVocab = null, vocabMatchesFound = 0;
-
-        function initVocabGame() {
-            vocabMatchesFound = 0; selectedVocab = null;
-            document.getElementById('vocabFeedback').innerText = "";
-            let shuffledMaster = shuffleArray([...masterVocabPairs]);
-            activePairs = shuffledMaster.slice(0, 6);
-            let allItems = [];
-            activePairs.forEach(p => { allItems.push(p.word); allItems.push(p.match); });
-            allItems = shuffleArray(allItems);
-            
-            let board = document.getElementById('vocabBoard');
-            board.innerHTML = "";
-            allItems.forEach(item => {
-                let btn = document.createElement("button");
-                btn.className = "vocab-btn"; btn.innerText = item;
-                btn.onclick = () => selectVocab(btn, item);
-                board.appendChild(btn);
-            });
+        function checkG(b,s,a){
+            if(s===a){ addScore(10); petReaction("correct"); document.getElementById('grammarFeedback').innerText="🌟 Correct! +10"; document.getElementById('nextGrammarBtn').style.display="inline-block"; document.querySelectorAll('.grammar-option').forEach(x=>x.style.pointerEvents="none"); }
+            else { b.classList.add('wrong-shake'); addScore(-3); petReaction("wrong"); setTimeout(()=>b.classList.remove('wrong-shake'),500); }
         }
+        function nextGrammar(){ cg++; loadGrammarQuestion(); }
 
-        function selectVocab(btn, text) {
-            if (btn.classList.contains('vocab-matched')) return;
-            if (!selectedVocab) {
-                btn.classList.add('vocab-selected');
-                selectedVocab = { btn: btn, text: text };
-            } else {
-                if (selectedVocab.btn === btn) {
-                    btn.classList.remove('vocab-selected'); selectedVocab = null; return;
-                }
-                let isMatch = activePairs.some(p => (p.word === text && p.match === selectedVocab.text) || (p.match === text && p.word === selectedVocab.text));
-                if (isMatch) {
-                    btn.classList.add('vocab-matched'); selectedVocab.btn.classList.remove('vocab-selected'); selectedVocab.btn.classList.add('vocab-matched');
-                    vocabMatchesFound++;
-                    document.getElementById('vocabFeedback').innerText = "✨ Perfect Match! +5 Points";
-                    document.getElementById('vocabFeedback').style.color = "#4caf50";
-                    addScore(5); petReaction("correct");
-                    if(vocabMatchesFound === activePairs.length) {
-                        setTimeout(() => alert("🎉 You matched all words! You are a Vocab Master!"), 500);
-                    }
-                } else {
-                    btn.classList.add('wrong-shake'); selectedVocab.btn.classList.remove('vocab-selected');
-                    document.getElementById('vocabFeedback').innerText = "Oops! -2 Points. Try again.";
-                    document.getElementById('vocabFeedback').style.color = "#e53935";
-                    addScore(-2); // PENGURANGAN POIN
-                    petReaction("wrong");
-                    setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
-                }
-                selectedVocab = null;
-            }
+        // MISSION 3: SCRAMBLE
+        let cs=0; let sList=shuffle([...sPool]);
+        function loadScrambleWord(){
+            if(cs>=sList.length){cs=0; sList=shuffle([...sPool]);} let q=sList[cs];
+            document.getElementById('scrambleClue').innerText="Clue: "+q.c;
+            document.getElementById('scrambleInput').value=""; document.getElementById('scrambleFeedback').innerText="";
+            document.getElementById('nextScrambleBtn').style.display="none";
+            document.getElementById('scrambleWord').innerText=shuffle(q.w.split('')).join(' ');
         }
-
-        // --- GAME 2: SENTENCE FIXER ---
-        const grammarQ = [
-            { s: "Yesterday, I ___ to the park.", opt: ["go", "goes", "went"], a: "went" },
-            { s: "Neko ___ sleeping on the sofa right now.", opt: ["is", "are", "were"], a: "is" },
-            { s: "She has never ___ sushi before.", opt: ["eat", "ate", "eaten"], a: "eaten" },
-            { s: "If it rains, we ___ stay at home.", opt: ["would", "will", "did"], a: "will" }
-        ];
-        let currG = 0;
-
-        function loadGrammarQuestion() {
-            if (currG >= grammarQ.length) currG = 0;
-            let q = grammarQ[currG];
-            document.getElementById('grammarSentence').innerHTML = q.s.replace("___", "<b>___</b>");
-            document.getElementById('grammarFeedback').innerText = "";
-            document.getElementById('nextGrammarBtn').style.display = "none";
-            let optDiv = document.getElementById('grammarOptions');
-            optDiv.innerHTML = "";
-            q.opt.forEach(o => {
-                let btn = document.createElement("button");
-                btn.className = "grammar-option"; btn.innerText = o;
-                btn.onclick = () => checkGrammar(btn, o, q.a);
-                optDiv.appendChild(btn);
-            });
+        function checkScramble(){
+            let i=document.getElementById('scrambleInput').value.toUpperCase().trim();
+            if(i===sList[cs].w){ addScore(10); petReaction("correct"); document.getElementById('scrambleFeedback').innerText="🌟 Great! +10"; document.getElementById('nextScrambleBtn').style.display="inline-block"; }
+            else { addScore(-3); petReaction("wrong"); document.getElementById('scrambleInput').classList.add('wrong-shake'); setTimeout(()=>document.getElementById('scrambleInput').classList.remove('wrong-shake'),500); }
         }
+        function nextScramble(){ cs++; loadScrambleWord(); }
 
-        function checkGrammar(btn, selected, correct) {
-            if (selected === correct) {
-                document.getElementById('grammarSentence').innerHTML = grammarQ[currG].s.replace("___", "<b style='color:#4caf50;'>" + selected + "</b>");
-                document.getElementById('grammarFeedback').innerText = "🌟 Correct! +10 Points!";
-                document.getElementById('grammarFeedback').style.color = "#4caf50";
-                document.getElementById('nextGrammarBtn').style.display = "inline-block";
-                addScore(10); petReaction("correct");
-                document.querySelectorAll('.grammar-option').forEach(b => b.style.pointerEvents = "none");
-            } else {
-                btn.classList.add('wrong-shake');
-                document.getElementById('grammarFeedback').innerText = "❌ Oops! -3 Points. Try again.";
-                document.getElementById('grammarFeedback').style.color = "#e53935";
-                addScore(-3); // PENGURANGAN POIN
-                petReaction("wrong");
-                setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
-            }
+        // MISSION 4: READING
+        let cr=0; let rList=shuffle([...rPool]);
+        function loadReadingQuest(){
+            if(cr>=rList.length){cr=0; rList=shuffle([...rPool]);} let q=rList[cr];
+            document.getElementById('readingStory').innerText=q.t; document.getElementById('readingQuestion').innerText=q.q;
+            document.getElementById('readingFeedback').innerText=""; document.getElementById('nextReadingBtn').style.display="none";
+            let d=document.getElementById('readingOptions'); d.innerHTML="";
+            q.o.forEach(o=>{ let b=document.createElement("button"); b.className="reading-option"; b.innerText=o; b.onclick=()=>checkR(b,o,q.a); d.appendChild(b); });
         }
-        function nextGrammar() { currG++; loadGrammarQuestion(); }
-
-        // --- GAME 3: WORD SCRAMBLE ---
-        const scrambleWords = [
-            { w: "ENORMOUS", c: "Very Big" }, { w: "STARVING", c: "Very Hungry" },
-            { w: "FREEZING", c: "Very Cold" }, { w: "BRILLIANT", c: "Very Clever" }
-        ];
-        let currS = 0;
-
-        function loadScrambleWord() {
-            if (currS >= scrambleWords.length) currS = 0;
-            let wordObj = scrambleWords[currS];
-            document.getElementById('scrambleClue').innerText = "Clue: " + wordObj.c;
-            document.getElementById('scrambleInput').value = "";
-            document.getElementById('scrambleFeedback').innerText = "";
-            document.getElementById('nextScrambleBtn').style.display = "none";
-            
-            let arr = wordObj.w.split('');
-            arr = shuffleArray(arr);
-            document.getElementById('scrambleWord').innerText = arr.join(' ');
-        }
-
-        function checkScramble() {
-            let input = document.getElementById('scrambleInput').value.toUpperCase().trim();
-            let correct = scrambleWords[currS].w;
-            if (input === correct) {
-                document.getElementById('scrambleFeedback').innerText = "🌟 Brilliant! +10 Points!";
-                document.getElementById('scrambleFeedback').style.color = "#4caf50";
-                document.getElementById('nextScrambleBtn').style.display = "inline-block";
-                addScore(10); petReaction("correct");
-            } else {
-                document.getElementById('scrambleInput').classList.add('wrong-shake');
-                document.getElementById('scrambleFeedback').innerText = "❌ Not quite! -3 Points.";
-                document.getElementById('scrambleFeedback').style.color = "#e53935";
-                addScore(-3); // PENGURANGAN POIN
-                petReaction("wrong");
-                setTimeout(() => { document.getElementById('scrambleInput').classList.remove('wrong-shake'); }, 500);
-            }
-        }
-        function nextScramble() { currS++; loadScrambleWord(); }
-
-        // --- GAME 4: READING MYSTERY ---
-        const readingStory = [
-            { text: "Neko the cat was walking in the garden. Suddenly, he saw a tiny, shiny object under the rose bush. It was a silver key!", q: "Where did Neko find the key?", opt: ["Under the big tree", "Under the rose bush", "Inside the house"], a: "Under the rose bush" },
-            { text: "Tom felt exhausted after running in the park for two hours. He sat on a bench and drank a whole bottle of cold water.", q: "Why did Tom drink cold water?", opt: ["Because he was hungry", "Because he felt freezing", "Because he was exhausted after running"], a: "Because he was exhausted after running" }
-        ];
-        let currR = 0;
-
-        function loadReadingQuest() {
-            if (currR >= readingStory.length) currR = 0;
-            let r = readingStory[currR];
-            document.getElementById('readingStory').innerText = r.text;
-            document.getElementById('readingQuestion').innerText = r.q;
-            document.getElementById('readingFeedback').innerText = "";
-            document.getElementById('nextReadingBtn').style.display = "none";
-            
-            let optDiv = document.getElementById('readingOptions');
-            optDiv.innerHTML = "";
-            r.opt.forEach(o => {
-                let btn = document.createElement("button");
-                btn.className = "reading-option"; btn.innerText = o;
-                btn.onclick = () => checkReading(btn, o, r.a);
-                optDiv.appendChild(btn);
-            });
-        }
-
-        function checkReading(btn, selected, correct) {
-            if (selected === correct) {
-                btn.style.backgroundColor = "#c8e6c9";
-                btn.style.borderColor = "#4caf50";
-                document.getElementById('readingFeedback').innerText = "🌟 Great Reading! +15 Points!";
-                document.getElementById('readingFeedback').style.color = "#4caf50";
-                document.getElementById('nextReadingBtn').style.display = "inline-block";
-                addScore(15); petReaction("correct");
-                document.querySelectorAll('.reading-option').forEach(b => b.style.pointerEvents = "none");
-            } else {
-                btn.classList.add('wrong-shake');
-                document.getElementById('readingFeedback').innerText = "❌ Look closely! -5 Points.";
-                document.getElementById('readingFeedback').style.color = "#e53935";
-                addScore(-5); // PENGURANGAN POIN
-                petReaction("wrong");
-                setTimeout(() => { btn.classList.remove('wrong-shake'); }, 500);
-            }
-        }
-        function nextReading() { currR++; loadReadingQuest(); }
-
-    </script>
-</body>
-</html>
+        function checkR(b,s,a){
+            if(s===a){ addScore(15); petReaction("correct"); document.getElementById('readingFeedback').innerText="🌟 Amazing! +15"; document.getElementById
