@@ -3,335 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cambridge Quest with Neko</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>The Mysterious Island Quest</title>
     <style>
-        body { font-family: 'Nunito', sans-serif; background-color: #e8f5e9; color: #333; margin: 0; padding: 20px; text-align: center; }
-        h1 { color: #2e7d32; font-size: 2.2em; margin-bottom: 5px; }
-        
-        /* --- SCREENS (Login & Grade Selection) --- */
-        .overlay-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #a5d6a7; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .box-container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 5px dashed #4caf50; max-width: 400px; width: 90%; }
-        .box-container input { font-size: 1.2em; padding: 10px; border-radius: 10px; border: 2px solid #81c784; text-align: center; margin: 15px 0; font-family: 'Nunito'; width: 80%;}
-        
-        /* --- HEADER & PROGRESS --- */
-        .user-panel { background: #fff; padding: 15px 25px; border-radius: 20px; margin: 0 auto 20px auto; max-width: 700px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border: 3px solid #81c784; }
-        .user-info { text-align: left; }
-        .user-name { font-size: 1.3em; font-weight: 900; color: #2e7d32; }
-        .progress-container { width: 200px; background-color: #e0e0e0; border-radius: 15px; overflow: hidden; height: 20px; margin-top: 5px; }
-        .progress-bar { height: 100%; background-color: #ffb300; width: 0%; transition: width 0.5s ease-in-out; }
-        .points-text { font-weight: bold; color: #f57f17; }
-        .score-minus { animation: popMinus 0.5s ease-out; color: #e53935 !important; }
-        @keyframes popMinus { 0% { transform: scale(1); } 50% { transform: scale(1.5); color: #d32f2f; } 100% { transform: scale(1); } }
-
-        /* --- CHARACTER INTERACTIVE --- */
-        .character-container { margin: 10px auto; height: 120px; }
-        .character { font-size: 5em; display: inline-block; transition: transform 0.3s; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
-        .char-bounce { animation: bounce 0.5s ease; }
-        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
-
-        /* --- DASHBOARD --- */
-        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; max-width: 700px; margin: 0 auto; }
-        .menu-card { background-color: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 15px rgba(0,0,0,0.1); border: 4px solid #81c784; cursor: pointer; transition: transform 0.2s; }
-        .menu-card:hover { transform: translateY(-5px); border-color: #4caf50; }
-        .menu-icon { font-size: 2.5em; margin-bottom: 5px; }
-        .menu-title { font-size: 1.2em; font-weight: 900; color: #2e7d32; }
-
-        /* --- MODAL GENERAL --- */
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); overflow-y: auto;}
-        .modal-content { background-color: #fff; margin: 5% auto; padding: 30px; border-radius: 20px; width: 90%; max-width: 550px; text-align: center; position: relative; border: 5px dashed #ffb300; margin-bottom: 50px;}
-        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 30px; font-weight: bold; color: #aaa; cursor: pointer; }
-
-        .btn { background-color: #ffb300; color: #fff; border: none; padding: 12px 25px; border-radius: 50px; font-size: 1.1em; font-weight: bold; cursor: pointer; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .btn:hover { background-color: #ff8f00; }
-        .btn-blue { background-color: #29b6f6; width: 100%; margin-bottom: 10px;}
-        .btn-blue:hover { background-color: #0288d1; }
-        .btn-purple { background-color: #ab47bc; width: 100%;}
-        .btn-purple:hover { background-color: #8e24aa; }
-        .btn-reward { background-color: #4caf50; display: none; width: 100%; margin-top: 10px; animation: pulse 1s infinite; font-size: 1.2em; padding: 15px;}
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        
-        .feedback-text { font-weight: bold; margin-top: 15px; min-height: 25px; font-size: 1.1em; }
-        .wrong-shake { animation: shake 0.4s; background-color: #ffcdd2 !important; border-color: #e53935 !important; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
-
-        /* Vocab Grid Styles */
-        .vocab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-        @media (max-width: 480px) { .vocab-grid { grid-template-columns: repeat(2, 1fr); } }
-        .vocab-btn { background-color: #bbdefb; border: 3px solid #64b5f6; border-radius: 12px; font-size: 0.9em; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; min-height: 70px; padding: 5px;}
-        .vocab-selected { background-color: #fff59d !important; border-color: #fbc02d !important; }
-        .vocab-matched { background-color: #c8e6c9 !important; border-color: #4caf50 !important; color: #2e7d32; cursor: default; opacity: 0.5; pointer-events: none;}
-
-        /* Grammar Styles */
-        .grammar-box { background-color: #e1bee7; padding: 20px; border-radius: 15px; margin-bottom: 20px; font-size: 1.2em; font-weight: bold; color: #4a148c; border: 3px dashed #ba68c8; }
-        .grammar-option { display: inline-block; background-color: #fff; border: 2px solid #ab47bc; padding: 10px 20px; margin: 5px; border-radius: 10px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
-
-        /* Scramble Styles */
-        .scramble-box { background: #ffe0b2; padding: 20px; border-radius: 15px; border: 3px dashed #ff9800; font-size: 1.8em; letter-spacing: 5px; font-weight: 900; color: #e65100; margin-bottom: 15px;}
-        .scramble-input { font-size: 1.5em; padding: 10px; text-align: center; border-radius: 10px; border: 2px solid #ff9800; width: 80%; text-transform: uppercase; font-family: 'Nunito'; font-weight: bold;}
-
-        /* Reading Styles */
-        .reading-box { text-align: left; background: #fff9c4; padding: 20px; border-radius: 10px; font-size: 1.1em; line-height: 1.6; border: 2px solid #fbc02d; margin-bottom: 15px;}
-        .reading-option { display: block; width: 100%; background: #fff; border: 2px solid #fbc02d; padding: 10px; margin-bottom: 10px; border-radius: 10px; font-size: 1em; font-weight: bold; cursor: pointer; text-align: left;}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        #game-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #1a5f7a;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        #progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            height: 10px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            height: 100%;
+            background-color: #f39c12;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+        #story-text {
+            font-size: 19px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border-left: 6px solid #f39c12;
+            text-align: left;
+        }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        button {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+        button:hover:not(:disabled) {
+            background-color: #1abc9c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #feedback {
+            margin-top: 25px;
+            font-weight: bold;
+            font-size: 17px;
+            min-height: 45px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        .correct { 
+            background-color: #d5f5e3;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+            display: block !important;
+        }
+        .wrong { 
+            background-color: #fadbd8;
+            color: #c0392b;
+            border: 1px solid #c0392b;
+            display: block !important;
+        }
+        #score-display {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            border-top: 2px dashed #bdc3c7;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen" class="overlay-screen">
-        <div class="box-container">
-            <h2>👋 Welcome Agent!</h2>
-            <p>Enter your name to start the mission.</p>
-            <input type="text" id="usernameInput" placeholder="Agent Name...">
-            <br>
-            <button class="btn" onclick="login()">Login</button>
-        </div>
+<div id="game-container">
+    <h1>🧭 Escape from The Mysterious Island</h1>
+    <div class="subtitle">Level: CPC Advanced (Grammar & Vocab)</div>
+    
+    <div id="progress-bar">
+        <div id="progress-fill"></div>
     </div>
 
-    <div id="gradeScreen" class="overlay-screen" style="display: none;">
-        <div class="box-container">
-            <h2>🎯 Select Your Level</h2>
-            <p>Are you playing for Grade 6 or Grade 7?</p>
-            <button class="btn btn-blue" onclick="selectGrade(6)">Grade 6 (Cambridge Primary)</button>
-            <button class="btn btn-purple" onclick="selectGrade(7)">Grade 7 (Cambridge ESL 0876)</button>
+    <div id="story-text">Loading story...</div>
+    
+    <div class="btn-container" id="options">
         </div>
-    </div>
 
-    <div class="user-panel">
-        <div class="user-info">
-            <div class="user-name" id="displayUsername">Agent ???</div>
-            <div style="font-size: 0.9em; color: #555; font-weight: bold;" id="displayGrade">Level: ???</div>
-            <div class="progress-container">
-                <div class="progress-bar" id="targetBar"></div>
-            </div>
-        </div>
-        <div class="points-text">
-            <span id="scoreDisplay" style="font-size: 2em;">0</span> ⭐
-        </div>
-    </div>
+    <div id="feedback"></div>
+    <div id="score-display">Score: 0 / 15</div>
+</div>
 
-    <div class="character-container">
-        <div class="character" id="petCharacter">🐱</div>
-        <div style="font-weight: bold; color: #4caf50;">"Hi! I'm Neko! Reach 300 points for a surprise!"</div>
-    </div>
-
-    <button class="btn btn-reward" id="rewardBtn" onclick="claimReward()">🎁 CLAIM YOUR 300 POINTS REWARD! 🎁</button>
-
-    <div class="dashboard">
-        <div class="menu-card" onclick="openModal('vocabModal'); initVocabGame();">
-            <div class="menu-icon">🧩</div>
-            <div class="menu-title">Mission 1:<br>Vocab Match</div>
-        </div>
-        <div class="menu-card" onclick="openModal('grammarModal'); loadGrammarQuestion();">
-            <div class="menu-icon">🛠️</div>
-            <div class="menu-title">Mission 2:<br>Sentence Fixer</div>
-        </div>
-        <div class="menu-card" onclick="openModal('scrambleModal'); loadScrambleWord();">
-            <div class="menu-icon">🔠</div>
-            <div class="menu-title">Mission 3:<br>Word Scramble</div>
-        </div>
-        <div class="menu-card" onclick="openModal('readingModal'); loadReadingQuest();">
-            <div class="menu-icon">📜</div>
-            <div class="menu-title">Mission 4:<br>Reading Mystery</div>
-        </div>
-    </div>
-
-    <div id="vocabModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('vocabModal')">&times;</span><h2>🧩 Vocab Match</h2><p>Match the word with its definition!</p><div class="vocab-grid" id="vocabBoard"></div><p id="vocabFeedback" class="feedback-text"></p><button class="btn" onclick="initVocabGame()">New Words</button></div></div>
-    <div id="grammarModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('grammarModal')">&times;</span><h2>🛠️ Sentence Fixer</h2><p>Fix the broken sentence!</p><div class="grammar-box" id="grammarSentence"></div><div id="grammarOptions"></div><p id="grammarFeedback" class="feedback-text"></p><button class="btn" id="nextGrammarBtn" style="display:none;" onclick="nextGrammar()">Next ➔</button></div></div>
-    <div id="scrambleModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('scrambleModal')">&times;</span><h2>🔠 Word Scramble</h2><p id="scrambleClue" style="font-weight: bold; color: #e65100;">...</p><div class="scramble-box" id="scrambleWord">...</div><input type="text" id="scrambleInput" class="scramble-input" autocomplete="off"><br><button class="btn" onclick="checkScramble()">Check</button><p id="scrambleFeedback" class="feedback-text"></p><button class="btn" id="nextScrambleBtn" style="display:none;" onclick="nextScramble()">Next ➔</button></div></div>
-    <div id="readingModal" class="modal"><div class="modal-content"><span class="close-btn" onclick="closeModal('readingModal')">&times;</span><h2>📜 Reading Mystery</h2><div class="reading-box" id="readingStory"></div><p id="readingQuestion" style="font-weight: bold;"></p><div id="readingOptions"></div><p id="readingFeedback" class="feedback-text"></p><button class="btn" id="nextReadingBtn" style="display:none;" onclick="nextReading()">Next ➔</button></div></div>
-
-    <script>
-        // --- 1. GLOBAL VARIABLES & LOCAL STORAGE ---
-        let currentScore = 0; 
-        const TARGET_SCORE = 300;
-        let activeGrade = 0; // Menyimpan kelas berapa yang dipilih (6 atau 7)
-
-        // Variabel penampung yang akan dipakai game
-        let vPool = [], gPool = [], sPool = [], rPool = [];
-
-        // --- 2. DATA SOAL GRADE 6 (Non-Fiction & Grammar) ---
-        const vPool6 = [
-            {w:"Explicit", m:"Clearly stated"}, {w:"Implicit", m:"Hidden/Suggested"}, {w:"Factual", m:"Based on facts"}, {w:"Conclude", m:"Decide at the end"}, {w:"Identify", m:"Recognize/Find"},
-            {w:"Compare", m:"Find similarities"}, {w:"Personify", m:"Give human traits"}, {w:"Feature", m:"Important part"}, {w:"Glossary", m:"Mini dictionary"}, {w:"Passive", m:"Receiving action"}
-        ];
-        const gPool6 = [
-            {s:"The girl ___ bag is blue is my friend.", o:["who","whose","where"], a:"whose"},
-            {s:"The pizza ___ by the chef right now.", o:["is cooked","was cooked","cooks"], a:"is cooked"},
-            {s:"That is the park ___ we played yesterday.", o:["where","which","who"], a:"where"},
-            {s:"A huge dinosaur skeleton ___ in the museum.", o:["is found","was found","find"], a:"was found"},
-            {s:"The boy ___ won the race is very fast.", o:["who","which","whose"], a:"who"},
-            {s:"The window ___ by the ball yesterday.", o:["is broken","was broken","break"], a:"was broken"},
-            {s:"I love the book ___ has many pictures.", o:["who","where","that"], a:"that"},
-            {s:"The lady ___ is wearing a hat is nice.", o:["who","whose","which"], a:"who"},
-            {s:"The letters ___ every morning.", o:["is delivered","are delivered","delivered"], a:"are delivered"},
-            {s:"This house ___ in 1990.", o:["was built","is built","build"], a:"was built"}
-        ];
-        const sPool6 = [
-            {w:"SIMILE", c:"Uses 'like' or 'as'"}, {w:"METAPHOR", c:"Direct comparison"}, {w:"CAPTION", c:"Text under a photo"}, {w:"GLOSSARY", c:"List of meanings"}, {w:"HEADING", c:"Main title"},
-            {w:"INDEX", c:"Page list at the back"}, {w:"PASSIVE", c:"Focus on the object"}, {w:"FACTUAL", c:"True information"}, {w:"EXPLICIT", c:"Stated clearly"}, {w:"WHICH", c:"Relative pronoun for things"}
-        ];
-        const rPool6 = [
-            {t:"Penguins cannot fly, but they are great swimmers.", q:"Why are they 'unlike other birds'?", o:["They swim","They cannot fly","They lay eggs"], a:"They cannot fly"},
-            {t:"Male penguins huddle to stay warm in storms.", q:"What is 'huddle'?", o:["To swim","To stand together","To run"], a:"To stand together"},
-            {t:"The stars danced in the sky.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Personification"},
-            {t:"My heart is a stone.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Metaphor"},
-            {t:"He is as brave as a lion.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Simile"},
-            {t:"Blue whales live in all oceans except the Arctic.", q:"Explicit: Where do they NOT live?", o:["The Arctic","Atlantic","Pacific"], a:"The Arctic"},
-            {t:"Check the back of the book for word meanings.", q:"Which feature should you use?", o:["Index","Glossary","Heading"], a:"Glossary"},
-            {t:"The classroom was a zoo today!", q:"What does this mean?", o:["There were lions","It was chaotic/loud","It was a field trip"], a:"It was chaotic/loud"},
-            {t:"Time is money.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Metaphor"},
-            {t:"The wind whispered through the trees.", q:"Identify the figurative language:", o:["Simile","Metaphor","Personification"], a:"Personification"}
-        ];
-
-        // --- 3. DATA SOAL GRADE 7 (Festivals & Extreme Weather) ---
-        const vPool7 = [
-            {w:"Spectacular", m:"Very impressive"}, {w:"Commemorate", m:"To remember officially"}, {w:"Vibrant", m:"Full of color/life"}, {w:"Feast", m:"A large special meal"}, {w:"Gathering", m:"A meeting/party"},
-            {w:"Blizzard", m:"Severe snowstorm"}, {w:"Drought", m:"Long period no rain"}, {w:"Devastating", m:"Causing destruction"}, {w:"Evacuate", m:"Move to a safe place"}, {w:"Precaution", m:"Action to protect"}
-        ];
-        const gPool7 = [
-            {s:"The festival ___ the victory of light over darkness.", o:["commemorates","evacuates","feasts"], a:"commemorates"},
-            {s:"The flood caused ___ damage to the village.", o:["spectacular","vibrant","devastating"], a:"devastating"},
-            {s:"We locked the doors as a ___ before the storm.", o:["drought","precaution","blizzard"], a:"precaution"},
-            {s:"Diwali is known as the Festival of ___.", o:["Lights","Colors","Gathering"], a:"Lights"},
-            {s:"A long period without rain is called a ___.", o:["blizzard","drought","feast"], a:"drought"},
-            {s:"The government asked people to ___ the dangerous area.", o:["evacuate","commemorate","feast"], a:"evacuate"},
-            {s:"At the festival, families share a delicious ___.", o:["blizzard","feast","drought"], a:"feast"},
-            {s:"The fireworks in the night sky were absolutely ___!", o:["devastating","spectacular","drought"], a:"spectacular"},
-            {s:"A severe snowstorm with strong winds is a ___.", o:["blizzard","drought","feast"], a:"blizzard"},
-            {s:"The city center was ___ with colorful decorations.", o:["evacuated","vibrant","devastating"], a:"vibrant"}
-        ];
-        const sPool7 = [
-            {w:"FESTIVAL", c:"A day of celebration"}, {w:"BLIZZARD", c:"Severe snowstorm"}, {w:"DROUGHT", c:"No rain for a long time"}, {w:"FEAST", c:"A big delicious meal"}, {w:"VIBRANT", c:"Full of bright colors"},
-            {w:"WEATHER", c:"Rain, sun, snow, etc"}, {w:"GATHERING", c:"People coming together"}, {w:"EVACUATE", c:"Leave a dangerous place"}, {w:"DAMAGE", c:"Harm or destruction"}, {w:"SURVIVE", c:"Stay alive in danger"}
-        ];
-        const rPool7 = [
-            {t:"Diwali is the Festival of Lights. It commemorates the victory of good over evil.", q:"What does Diwali commemorate?", o:["Good over evil","The new year","Winter season"], a:"Good over evil"},
-            {t:"During Diwali, people decorate homes with small clay lamps called diyas.", q:"What is a diya?", o:["A firework","A small clay lamp","A feast"], a:"A small clay lamp"},
-            {t:"A heatwave is a period of unusually hot weather that can last for weeks.", q:"Is a heatwave only one day long?", o:["True","False","Not Given"], a:"False"},
-            {t:"Extreme heat is very dangerous, especially for elderly people and children.", q:"Who is in the most danger?", o:["Only adults","Elderly and children","Everyone equally"], a:"Elderly and children"},
-            {t:"During a heatwave, you should avoid going outside between 11 AM and 3 PM.", q:"Is it safe to play outside at 1 PM?", o:["True","False","Not Given"], a:"False"},
-            {t:"In 2022, a devastating heatwave in Europe caused many forest fires.", q:"What happened in Europe in 2022?", o:["A blizzard","Forest fires","A flood"], a:"Forest fires"},
-            {t:"The Harbin Ice Festival in China features colossal ice sculptures.", q:"What does 'colossal' mean?", o:["Very small","Very large","Colorful"], a:"Very large"},
-            {t:"During a hurricane, authorities advise people to stay indoors.", q:"Why stay indoors?", o:["To watch TV","To stay safe","To evacuate"], a:"To stay safe"},
-            {t:"The storm uprooted trees and destroyed roofs.", q:"What verb describes the storm's action?", o:["Destroyed","Advised","Prepared"], a:"Destroyed"},
-            {t:"Families clean their homes before the vibrant festival begins.", q:"What is done before the festival?", o:["Eating feasts","Cleaning homes","Watching fireworks"], a:"Cleaning homes"}
-        ];
-
-        // --- 4. SYSTEM LOGIN & GRADE SELECTION ---
-        window.onload = function() {
-            // Reset state saat halaman direfresh agar selalu diminta pilih Grade
-            document.getElementById("loginScreen").style.display = "flex";
-            document.getElementById("gradeScreen").style.display = "none";
+<script>
+    const storyNodes = [
+        {
+            text: "Chapter 1: You woke up on a strange sandy beach. While you ________ through the dense jungle trying to find a path, you heard a strange noise.",
+            options: [
+                { text: "were wandering", correct: true },
+                { text: "wandered", correct: false },
+                { text: "have wandered", correct: false }
+            ],
+            explanation: "Excellent! We use Past Continuous ('were wandering') for a long background action that gets interrupted."
+        },
+        {
+            text: "You followed the strange sound and found an ________ cave hidden behind some vines. It was the biggest cave you had ever seen!",
+            options: [
+                { text: "astonished", correct: false },
+                { text: "enormous", correct: true },
+                { text: "courageous", correct: false }
+            ],
+            explanation: "Spot on! 'Enormous' means extremely large."
+        },
+        {
+            text: "You wanted to go inside, but it looked terrifying. You ________ entered the dark cave, stepping very carefully.",
+            options: [
+                { text: "eagerly", correct: false },
+                { text: "reluctantly", correct: true },
+                { text: "peculiarly", correct: false }
+            ],
+            explanation: "Correct! 'Reluctantly' means doing something unwillingly or with hesitation because you are scared."
+        },
+        {
+            text: "Suddenly, a glowing ghost floated out of the walls! The ghost looked at you and cried, 'I ________ my golden key. I can't open my treasure chest!'",
+            options: [
+                { text: "lost", correct: false },
+                { text: "was losing", correct: false },
+                { text: "have lost", correct: true }
+            ],
+            explanation: "Brilliant! The ghost lost the key in the past, but the effect (the key is still missing NOW) means we must use Present Perfect ('have lost')."
+        },
+        {
+            text: "You gave the crying ghost a shiny silver coin to make him happy. The ghost smiled, took the coin, and suddenly ________ into thin air!",
+            options: [
+                { text: "gazed", correct: false },
+                { text: "vanished", correct: true },
+                { text: "overcame", correct: false }
+            ],
+            explanation: "Perfect! 'Vanished' means disappeared completely and suddenly."
+        },
+        {
+            text: "Chapter 2: After the ghost left, you walked deeper into the cave. Ten minutes later, you ________ a hidden door made of ancient wood.",
+            options: [
+                { text: "discovered", correct: true },
+                { text: "were discovering", correct: false },
+                { text: "have discovered", correct: false }
+            ],
+            explanation: "Great! This is a completed action in the past, so we use Past Simple ('discovered')."
+        },
+        {
+            text: "You opened the door and saw an underground lake. The water was ________ beautifully under the light of blue crystals.",
+            options: [
+                { text: "shimmering", correct: true },
+                { text: "gazing", correct: false },
+                { text: "wandering", correct: false }
+            ],
+            explanation: "Correct! 'Shimmering' means shining with a soft, slightly wavering light."
+        },
+        {
+            text: "You ________ the beautiful crystals when a giant water snake suddenly jumped out of the lake!",
+            options: [
+                { text: "admired", correct: false },
+                { text: "were admiring", correct: true },
+                { text: "have admired", correct: false }
+            ],
+            explanation: "Awesome! You 'were admiring' (Past Continuous) when the snake 'jumped' (Past Simple) and interrupted you!"
+        },
+        {
+            text: "The giant snake hissed loudly. You were terrified, but you knew you needed to ________ your fear to survive.",
+            options: [
+                { text: "vanish", correct: false },
+                { text: "overcome", correct: true },
+                { text: "gaze", correct: false }
+            ],
+            explanation: "Spot on! To 'overcome' means to successfully control a feeling or problem."
+        },
+        {
+            text: "Taking a deep breath, you did something very ________. You threw a rock to distract the snake and ran straight past it!",
+            options: [
+                { text: "peculiar", correct: false },
+                { text: "astonished", correct: false },
+                { text: "courageous", correct: true }
+            ],
+            explanation: "That's right! 'Courageous' means very brave."
+        },
+        {
+            text: "You safely reached the other side. You remembered reading a book stating that giant snakes usually ________ during the day.",
+            options: [
+                { text: "sleep", correct: true },
+                { text: "are sleeping", correct: false },
+                { text: "slept", correct: false }
+            ],
+            explanation: "Correct! We use Present Simple ('sleep') to talk about facts or general habits of animals."
+        },
+        {
+            text: "'Oh no,' you whispered. 'The snake ________ right now because of the loud noise I just made!'",
+            options: [
+                { text: "wakes up", correct: false },
+                { text: "is waking up", correct: true },
+                { text: "woke up", correct: false }
+            ],
+            explanation: "Brilliant! Because it is happening 'right now' at this exact moment, we use Present Continuous ('is waking up')."
+        },
+        {
+            text: "Chapter 3: You ran away fast and stumbled into a secret treasure room. You stopped completely and ________ at the mountain of gold in front of you.",
+            options: [
+                { text: "gazed", correct: true },
+                { text: "shimmered", correct: false },
+                { text: "wandered", correct: false }
+            ],
+            explanation: "Perfect! To 'gaze' means to look steadily and intently, especially in admiration or surprise."
+        },
+        {
+            text: "Sitting on top of the gold, there was a very ________ looking compass. It didn't point North; it pointed straight up to the ceiling!",
+            options: [
+                { text: "enormous", correct: false },
+                { text: "peculiar", correct: true },
+                { text: "reluctant", correct: false }
+            ],
+            explanation: "Awesome! 'Peculiar' means strange or unusual."
+        },
+        {
+            text: "You grabbed the compass, and a secret elevator opened in the ceiling! 'Finally!' you shouted. 'I ________ for a way out for hours!'",
+            options: [
+                { text: "looked", correct: false },
+                { text: "am looking", correct: false },
+                { text: "have been looking", correct: true }
+            ],
+            explanation: "YOU DID IT! You started looking in the past, and you continued looking up until this very moment (Present Perfect Continuous)!"
         }
+    ];
 
-        function login() { 
-            let n = document.getElementById("usernameInput").value; 
-            if(!n) return alert("Please enter your name!"); 
-            
-            // Simpan nama, lanjut ke pilih kelas
-            document.getElementById("displayUsername").innerText = "Agent " + n; 
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("gradeScreen").style.display = "flex";
-        }
+    let currentNodeIndex = 0;
+    let score = 0;
 
-        function selectGrade(grade) {
-            activeGrade = grade;
-            if(grade === 6) {
-                vPool = [...vPool6]; gPool = [...gPool6]; sPool = [...sPool6]; rPool = [...rPool6];
-                document.getElementById('displayGrade').innerText = "Level: Grade 6";
-            } else if (grade === 7) {
-                vPool = [...vPool7]; gPool = [...gPool7]; sPool = [...sPool7]; rPool = [...rPool7];
-                document.getElementById('displayGrade').innerText = "Level: Grade 7";
-            }
-            
-            // Tutup layar pemilihan, mulai game
-            document.getElementById("gradeScreen").style.display = "none";
-            currentScore = 0; // Mulai dari 0 untuk setiap sesi baru
-            updateScoreUI();
-        }
+    const storyElement = document.getElementById('story-text');
+    const optionsElement = document.getElementById('options');
+    const feedbackElement = document.getElementById('feedback');
+    const scoreElement = document.getElementById('score-display');
+    const progressFill = document.getElementById('progress-fill');
 
-        // --- 5. CORE FUNCTIONS ---
-        function addScore(p){ currentScore+=p; if(currentScore<0)currentScore=0; updateScoreUI(); let s=document.getElementById("scoreDisplay"); if(p<0){s.classList.add("score-minus"); setTimeout(()=>s.classList.remove("score-minus"),500);} }
-        function updateScoreUI(){ document.getElementById("scoreDisplay").innerText=currentScore; let prg=(currentScore/TARGET_SCORE)*100; document.getElementById("targetBar").style.width=Math.min(prg,100)+"%"; if(currentScore>=TARGET_SCORE)document.getElementById("rewardBtn").style.display="block"; }
-        function petReaction(t){ if(currentScore>=TARGET_SCORE)return; let p=document.getElementById("petCharacter"); p.classList.remove("char-bounce"); void p.offsetWidth; if(t==="correct"){p.innerText="😻"; p.classList.add("char-bounce"); setTimeout(()=>p.innerText="🐱",2000);} else {p.innerText="🙀"; p.style.transform="rotate(15deg)"; setTimeout(()=>{p.innerText="🐱"; p.style.transform="rotate(0deg)"},800);} }
-        function openModal(id){ document.getElementById(id).style.display="block"; }
-        function closeModal(id){ document.getElementById(id).style.display="none"; }
-        function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
+    function startGame() {
+        currentNodeIndex = 0;
+        score = 0;
+        updateScore();
+        showNode(currentNodeIndex);
+    }
 
-        // --- 6. GAME LOGIC ---
+    function showNode(index) {
+        feedbackElement.style.display = "none";
+        feedbackElement.className = '';
         
-        // MISSION 1: VOCAB
-        let vPairs=[], vSel=null, vCount=0;
-        function initVocabGame(){
-            vCount=0; vSel=null; document.getElementById('vocabFeedback').innerText="";
-            let raw=shuffle([...vPool]).slice(0,6); vPairs=raw;
-            let items=shuffle(raw.flatMap(p=>[p.w, p.m]));
-            let b=document.getElementById('vocabBoard'); b.innerHTML="";
-            items.forEach(i=>{ let btn=document.createElement("button"); btn.className="vocab-btn"; btn.innerText=i; btn.onclick=()=>selVocab(btn,i); b.appendChild(btn); });
-        }
-        function selVocab(btn,txt){
-            if(btn.classList.contains('vocab-matched'))return;
-            if(!vSel){ btn.classList.add('vocab-selected'); vSel={btn,txt}; }
-            else {
-                if(vSel.btn===btn){ btn.classList.remove('vocab-selected'); vSel=null; return; }
-                let match=vPairs.some(p=>(p.w===txt && p.m===vSel.txt)||(p.m===txt && p.w===vSel.txt));
-                if(match){ btn.classList.add('vocab-matched'); vSel.btn.classList.remove('vocab-selected'); vSel.btn.classList.add('vocab-matched'); vCount++; addScore(5); petReaction("correct"); }
-                else { btn.classList.add('wrong-shake'); vSel.btn.classList.remove('vocab-selected'); addScore(-2); petReaction("wrong"); setTimeout(()=>btn.classList.remove('wrong-shake'),500); }
-                vSel=null;
-            }
+        // Update progress bar
+        const progressPercentage = (index / storyNodes.length) * 100;
+        progressFill.style.width = `${progressPercentage}%`;
+        
+        if (index >= storyNodes.length) {
+            progressFill.style.width = `100%`;
+            let finalMessage = "";
+            if(score === 15) finalMessage = "🏆 PERFECT SCORE! You are a Cambridge English Master!";
+            else if(score >= 10) finalMessage = "🌟 Awesome job! You escaped the island!";
+            else finalMessage = "👍 Good try! Keep practicing those tenses!";
+
+            storyElement.innerHTML = `<div style="text-align:center;"><strong>🎉 THE END 🎉</strong><br><br>${finalMessage}<br><br>You survived the Mysterious Island using your advanced vocabulary and grammar skills.</div>`;
+            optionsElement.innerHTML = `<button onclick="startGame()" style="background-color:#f39c12;">Play Again</button>`;
+            return;
         }
 
-        // MISSION 2: GRAMMAR
-        let cg=0; let gList=[];
-        function loadGrammarQuestion(){
-            if(gList.length===0 || cg>=gList.length){ cg=0; gList=shuffle([...gPool]); } 
-            let q=gList[cg];
-            document.getElementById('grammarSentence').innerHTML=q.s.replace("___","<b>___</b>");
-            document.getElementById('grammarFeedback').innerText=""; document.getElementById('nextGrammarBtn').style.display="none";
-            let d=document.getElementById('grammarOptions'); d.innerHTML="";
-            q.o.forEach(o=>{ let b=document.createElement("button"); b.className="grammar-option"; b.innerText=o; b.onclick=()=>checkG(b,o,q.a); d.appendChild(b); });
-        }
-        function checkG(b,s,a){
-            if(s===a){ addScore(10); petReaction("correct"); document.getElementById('grammarFeedback').innerText="🌟 Correct! +10"; document.getElementById('nextGrammarBtn').style.display="inline-block"; document.querySelectorAll('.grammar-option').forEach(x=>x.style.pointerEvents="none"); }
-            else { b.classList.add('wrong-shake'); addScore(-3); petReaction("wrong"); setTimeout(()=>b.classList.remove('wrong-shake'),500); }
-        }
-        function nextGrammar(){ cg++; loadGrammarQuestion(); }
+        const node = storyNodes[index];
+        storyElement.innerHTML = `<strong>Question ${index + 1} / 15:</strong><br><br>${node.text}`;
+        optionsElement.innerHTML = '';
 
-        // MISSION 3: SCRAMBLE
-        let cs=0; let sList=[];
-        function loadScrambleWord(){
-            if(sList.length===0 || cs>=sList.length){ cs=0; sList=shuffle([...sPool]); } 
-            let q=sList[cs];
-            document.getElementById('scrambleClue').innerText="Clue: "+q.c;
-            document.getElementById('scrambleInput').value=""; document.getElementById('scrambleFeedback').innerText="";
-            document.getElementById('nextScrambleBtn').style.display="none";
-            document.getElementById('scrambleWord').innerText=shuffle(q.w.split('')).join(' ');
-        }
-        function checkScramble(){
-            let i=document.getElementById('scrambleInput').value.toUpperCase().trim();
-            if(i===sList[cs].w){ addScore(10); petReaction("correct"); document.getElementById('scrambleFeedback').innerText="🌟 Great! +10"; document.getElementById('nextScrambleBtn').style.display="inline-block"; }
-            else { addScore(-3); petReaction("wrong"); document.getElementById('scrambleInput').classList.add('wrong-shake'); setTimeout(()=>document.getElementById('scrambleInput').classList.remove('wrong-shake'),500); }
-        }
-        function nextScramble(){ cs++; loadScrambleWord(); }
+        // Shuffle options
+        const shuffledOptions = [...node.options].sort(() => Math.random() - 0.5);
 
-        // MISSION 4: READING
-        let cr=0; let rList=[];
-        function loadReadingQuest(){
-            if(rList.length===0 || cr>=rList.length){ cr=0; rList=shuffle([...rPool]); } 
-            let q=rList[cr];
-            document.getElementById('readingStory').innerText=q.t; document.getElementById('readingQuestion').innerText=q.q;
-            document.getElementById('readingFeedback').innerText=""; document.getElementById('nextReadingBtn').style.display="none";
-            let d=document.getElementById('readingOptions'); d.innerHTML="";
-            q.o.forEach(o=>{ let b=document.createElement("button"); b.className="reading-option"; b.innerText=o; b.onclick=()=>checkR(b,o,q.a); d.appendChild(b); });
-        }
-        function checkR(b,s,a){
-            if(s===a){ addScore(15); petReaction("correct"); document.getElementById('readingFeedback').innerText="🌟 Amazing! +15"; document.getElementById('nextReadingBtn').style.display="inline-block"; document.querySelectorAll('.reading-option').forEach(x=>x.style.pointerEvents="none"); }
-            else { b.classList.add('wrong-shake'); addScore(-5); petReaction("wrong"); setTimeout(()=>b.classList.remove('wrong-shake'),500); }
-        }
-        function nextReading(){ cr++; loadReadingQuest(); }
+        shuffledOptions.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option.text;
+            button.onclick = () => selectOption(option, node.explanation);
+            optionsElement.appendChild(button);
+        });
+    }
 
-        function claimReward(){ alert("CONGRATULATIONS! 🎉 You are officially a Master Agent! Beritahu Kakak tutor-mu untuk hadiah aslimu!"); }
-    </script>
+    function selectOption(option, explanation) {
+        const buttons = optionsElement.querySelectorAll('button');
+        buttons.forEach(btn => btn.disabled = true);
+
+        feedbackElement.style.display = "block";
+
+        if (option.correct) {
+            feedbackElement.innerHTML = `✅ <strong>Correct!</strong> ${explanation}`;
+            feedbackElement.className = 'correct';
+            score++;
+            updateScore();
+        } else {
+            feedbackElement.innerHTML = `❌ <strong>Not quite right!</strong><br><br><em>Tip:</em> ${explanation}`;
+            feedbackElement.className = 'wrong';
+        }
+
+        // Wait a bit longer so the student can read the explanation
+        setTimeout(() => {
+            currentNodeIndex++;
+            showNode(currentNodeIndex);
+        }, 4500); // 4.5 seconds
+    }
+
+    function updateScore() {
+        scoreElement.textContent = `Score: ${score} / 15`;
+    }
+
+    startGame();
+</script>
+
 </body>
 </html>
